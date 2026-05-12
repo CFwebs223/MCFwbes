@@ -12,7 +12,6 @@ export default function CinematicSpacer() {
 
   // Parallax layers at different speeds
   const y1 = useTransform(scrollYProgress, [0, 1], ['-20%', '20%']);
-  const y2 = useTransform(scrollYProgress, [0, 1], ['-10%', '10%']);
   const y3 = useTransform(scrollYProgress, [0, 1], ['-30%', '30%']);
   const lineOpacity = useTransform(scrollYProgress, [0.2, 0.5, 0.8], [0, 1, 0]);
 

@@ -86,9 +86,10 @@ function BrowserMockup({ item }: { item: typeof portfolioItems[0] }) {
       <div className="absolute inset-0 pt-8 flex items-center justify-center">
         
         {/* The Image (Only appears on hover) */}
-        <img 
-          src={item.image} 
-          alt={item.title} 
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={item.image}
+          alt={item.title}
           className="absolute inset-0 w-full h-full object-cover pt-8 opacity-0 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105 z-10"
         />
         

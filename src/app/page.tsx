@@ -7,8 +7,6 @@ import PortfolioPreviewSection from "@/components/PortfolioPreviewSection";
 import PricingSection from "@/components/PricingSection";
 import OrbitReviews from "@/components/OrbitReviews";
 import FinalCTASection from "@/components/FinalCTASection";
-import CinematicSpacer from "@/components/CinematicSpacer";
-import SectionWipe from "@/components/SectionWipe";
 
 export default function Home() {
   return (

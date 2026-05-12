@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 export default function FinalCTASection() {
   const [bubbles, setBubbles] = useState<{ id: number; x: number; y: number }[]>([]);
-  const [ripple, setRipple] = useState(false);
 
   const spawnBubble = (e: React.KeyboardEvent) => {
     const target = e.target as HTMLElement;
