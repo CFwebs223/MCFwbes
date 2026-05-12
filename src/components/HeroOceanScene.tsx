@@ -34,7 +34,7 @@ export default function HeroOceanScene() {
       if (videoRef.current) {
         const targetTime = progressRef.current * VIDEO_DURATION;
         // Only update if the time difference is significant enough (prevents decoder thrashing)
-        if (Math.abs(lastTime - targetTime) > 0.001) {
+        if (Math.abs(lastTime - targetTime) > 0.033) {
           videoRef.current.currentTime = targetTime;
           lastTime = targetTime;
         }
@@ -79,8 +79,8 @@ export default function HeroOceanScene() {
   };
 
   const lineVars = {
-    hidden: { opacity: 0, y: 40, filter: "blur(10px)" },
-    show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 1.5, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] } }
+    hidden: { opacity: 0, y: 40 },
+    show: { opacity: 1, y: 0, transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] } }
   };
 
   return (
@@ -93,7 +93,7 @@ export default function HeroOceanScene() {
         
         {/* Ambient Cursor Ripple */}
         <motion.div 
-          className="fixed w-[40rem] h-[40rem] rounded-full pointer-events-none z-30 mix-blend-screen"
+          className="fixed w-[40rem] h-[40rem] rounded-full pointer-events-none z-30"
           style={{
             x: smoothCursorX, 
             y: smoothCursorY, 
@@ -113,7 +113,7 @@ export default function HeroOceanScene() {
             muted
             playsInline
             preload="auto"
-            className="absolute inset-0 w-full h-full object-cover object-top saturate-[1.4] hue-rotate-[15deg] contrast-[1.1] brightness-[0.85]"
+            className="absolute inset-0 w-full h-full object-cover object-top brightness-[0.85] will-change-transform"
           >
             <source src="/videos/hero_optimized.mp4" type="video/mp4" />
           </video>
