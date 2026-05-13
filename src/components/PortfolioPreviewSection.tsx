@@ -9,31 +9,31 @@ const portfolioItems = [
     title: 'Restaurant Website',
     type: 'Digital Menu & Booking',
     image: '/portfolio/restaurant.png',
-    url: 'https://mcfwebsites.lovable.app',
+    url: '/demos/restaurant.html',
   },
   {
     title: 'Tennis Coach',
     type: 'Booking Page',
     image: '/portfolio/tennis.png',
-    url: 'https://mcfwebsites.lovable.app',
+    url: '/demos/tennis.html',
   },
   {
     title: 'Coffee Shop',
     type: 'Landing Page',
     image: '/portfolio/coffee.png',
-    url: 'https://mcfwebsites.lovable.app',
+    url: '/demos/coffee.html',
   },
   {
     title: 'Product Business',
     type: 'Online Store',
     image: '/portfolio/store.png',
-    url: 'https://mcfwebsites.lovable.app',
+    url: '/demos/store.html',
   },
   {
     title: 'Event Company',
     type: 'Landing Page',
     image: '/portfolio/event.png',
-    url: 'https://mcfwebsites.lovable.app',
+    url: '/demos/event.html',
   },
 ];
 

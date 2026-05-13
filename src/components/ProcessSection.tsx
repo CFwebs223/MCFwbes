@@ -8,10 +8,8 @@ export default function ProcessSection() {
   const scrollVideoRef = useRef<HTMLVideoElement>(null);
   const [timecode, setTimecode] = useState("00:00:00:00");
 
-  const { scrollY } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"]
-  });
+  // Use GLOBAL scroll (no target) so velocity tracks across the entire page
+  const { scrollY } = useScroll();
 
   // Calculate scroll velocity to determine playback rate
   const scrollVelocity = useVelocity(scrollY);
@@ -20,16 +18,29 @@ export default function ProcessSection() {
     stiffness: 400
   });
 
-  // Idle base speed
-  const baseSpeedRef = useRef(1.0);
+  // Track idle vs scrolling state
+  const isScrollingRef = useRef(false);
+  const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useMotionValueEvent(smoothVelocity, "change", (latestVelocity) => {
-    if (scrollVideoRef.current) {
-      const speed = Math.abs(latestVelocity);
-      // Speed up when scrolling, return to base when idle
+    if (!scrollVideoRef.current) return;
+
+    const speed = Math.abs(latestVelocity);
+
+    if (speed > 5) {
+      // User is scrolling — speed up
+      isScrollingRef.current = true;
       const targetRate = 1.0 + (speed / 1000) * 1.5;
       scrollVideoRef.current.playbackRate = Math.min(targetRate, 3.0);
-      baseSpeedRef.current = Math.min(targetRate, 3.0);
+
+      // Reset idle timeout
+      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+      scrollTimeoutRef.current = setTimeout(() => {
+        isScrollingRef.current = false;
+        if (scrollVideoRef.current) {
+          scrollVideoRef.current.playbackRate = 1.0;
+        }
+      }, 200);
     }
   });
 
@@ -37,14 +48,15 @@ export default function ProcessSection() {
     const video = scrollVideoRef.current;
     if (!video) return;
 
-    // Ensure video is always playing (idle animation)
+    // Start playing at normal speed
+    video.playbackRate = 1.0;
     const playVideo = () => {
       video.play().catch(() => {});
     };
 
     playVideo();
 
-    // Resume playback if it pauses (handles autoplay policy)
+    // Resume playback if it pauses
     const handleVisibility = () => {
       if (document.visibilityState === 'visible') {
         playVideo();
@@ -64,6 +76,7 @@ export default function ProcessSection() {
     return () => {
       clearInterval(interval);
       document.removeEventListener('visibilitychange', handleVisibility);
+      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
     };
   }, []);
 

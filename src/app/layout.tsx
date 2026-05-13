@@ -18,6 +18,9 @@ const LoadingScreen = dynamic(() => import("@/components/LoadingScreen"), { ssr:
 export const metadata: Metadata = {
   title: "mcf.webs | AI-Built Websites & Digital Products",
   description: "mcf.webs creates modern websites, landing pages, digital menus, booking systems, and online tools for businesses that need to look sharper online.",
+  other: {
+    "theme-color": "#050505",
+  },
 };
 
 export default function RootLayout({
@@ -27,6 +30,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
+      <head>
+        <link rel="preload" href="/videos/hero_optimized.mp4" as="video" type="video/mp4" />
+      </head>
       <body className={`${inter.className} bg-black text-white antialiased`}>
         <LoadingScreen />
         <CustomCursor />

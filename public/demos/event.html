@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lumina Events — Landing Page</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#080610;color:#fff;overflow-x:hidden}
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(160deg,#080610,#1a1030,#080610);position:relative;overflow:hidden;padding:80px 24px;text-align:center}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 40%,rgba(120,80,200,0.08),transparent 60%)}
+.gradient-text{background:linear-gradient(135deg,#a78bfa,#e879f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.badge{background:rgba(120,80,200,0.15);border:1px solid rgba(120,80,200,0.3);padding:6px 16px;border-radius:100px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#a78bfa;margin-bottom:24px}
+.hero h1{font-size:clamp(2.5rem,6vw,5rem);font-weight:700;line-height:1.1;margin-bottom:16px}
+.hero p{font-size:clamp(1rem,2vw,1.2rem);color:rgba(255,255,255,0.6);max-width:520px;line-height:1.6;margin-bottom:40px}
+.btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.btn-primary{padding:14px 32px;border-radius:100px;background:linear-gradient(135deg,#a78bfa,#e879f9);color:#fff;border:none;font-weight:600;cursor:pointer;transition:all .3s}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(167,139,250,0.3)}
+.countdown{display:flex;gap:24px;margin-top:48px}
+.countdown-item{text-align:center}
+.countdown-item .num{font-size:2.5rem;font-weight:700;color:#a78bfa}
+.countdown-item .label{font-size:0.75rem;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:2px}
+</style>
+</head>
+<body>
+<section class="hero">
+<div class="badge">Event Landing Page</div>
+<h1><span class="gradient-text">Lumina</span><br>Music & Arts Festival</h1>
+<p>Three days of live music, immersive art, and unforgettable moments under the African sky. Cape Town — December 2026.</p>
+<div class="btns">
+<button class="btn-primary">Get Tickets</button>
+<button class="btn-secondary" style="padding:14px 32px;border-radius:100px;border:1px solid rgba(255,255,255,0.2);background:transparent;color:#fff;cursor:pointer">Lineup</button>
+</div>
+<div class="countdown">
+<div class="countdown-item"><div class="num">187</div><div class="label">Days</div></div>
+<div class="countdown-item"><div class="num">14</div><div class="label">Hours</div></div>
+<div class="countdown-item"><div class="num">32</div><div class="label">Min</div></div>
+</div>
+</section>
+</body>
+</html>

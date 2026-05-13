@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, useCallback } from 'react';
 import { motion, useScroll, useTransform, useSpring, useMotionValueEvent, useMotionValue } from 'framer-motion';
 
 const VIDEO_DURATION = 24.0;
@@ -9,6 +9,7 @@ export default function HeroOceanScene() {
   const containerRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const lastTimeRef = useRef(-1);
 
   useEffect(() => {
     setIsMobile(window.matchMedia('(pointer: coarse)').matches);
@@ -24,46 +25,19 @@ export default function HeroOceanScene() {
   const textOpacity = useTransform(scrollYProgress, [0, 0.1], [1, 0]);
   const textY = useTransform(scrollYProgress, [0, 0.1], [0, -100]);
 
-  // Map scroll progress to a variable for the render loop
-  const progressRef = useRef(0);
+  // Event-driven video scrubbing — NO rAF loop, zero CPU when idle
+  // Only seeks video when scrollYProgress actually changes
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    progressRef.current = latest;
-  });
-
-  // Hardware-synced render loop for absolute zero-latency video scrubbing
-  useEffect(() => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video || video.readyState < 2) return;
 
-    let frameId: number;
-    let lastTime = -1;
-    let isVisible = true;
-
-    // Throttle: higher threshold on mobile for less GPU work
-    const THROTTLE = isMobile ? 0.1 : 0.05;
-
-    const handleVisibility = () => {
-      isVisible = document.visibilityState === 'visible';
-    };
-    document.addEventListener('visibilitychange', handleVisibility);
-
-    const renderLoop = () => {
-      if (isVisible && video.readyState >= 2) {
-        const targetTime = progressRef.current * VIDEO_DURATION;
-        if (Math.abs(lastTime - targetTime) > THROTTLE) {
-          video.currentTime = targetTime;
-          lastTime = targetTime;
-        }
-      }
-      frameId = requestAnimationFrame(renderLoop);
-    };
-
-    frameId = requestAnimationFrame(renderLoop);
-    return () => {
-      cancelAnimationFrame(frameId);
-      document.removeEventListener('visibilitychange', handleVisibility);
-    };
-  }, [isMobile]);
+    const targetTime = latest * VIDEO_DURATION;
+    const throttle = isMobile ? 0.1 : 0.05;
+    if (Math.abs(lastTimeRef.current - targetTime) > throttle) {
+      video.currentTime = targetTime;
+      lastTimeRef.current = targetTime;
+    }
+  });
 
   // Branding fade in at the very end
   const brandingOpacity = useTransform(scrollYProgress, [0.8, 0.85], [0, 1]);
