@@ -72,13 +72,19 @@ export default function ServicesSection() {
         {/* Cover watermark */}
         <div className="absolute bottom-0 right-0 w-32 h-12 bg-gradient-to-l from-black to-transparent pointer-events-none z-10" />
 
-        {/* Fully black side panel — 38% width on desktop, full on mobile */}
+        {/* Fully black side panel — 38% width on desktop */}
         <div className="absolute left-0 top-0 bottom-0 w-full md:w-[38%] z-20 pointer-events-none">
           <div className="absolute inset-0 bg-black" />
-          <div className="absolute right-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-white/15 to-transparent" />
+          {/* Subtle grid overlay */}
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[length:32px_32px]" />
+          {/* Edge accent */}
+          <div className="absolute right-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-cyan-400/30 to-transparent" />
+          {/* Corner accent top-right */}
+          <div className="absolute -right-px top-12 w-6 h-px bg-cyan-400/50" />
+          <div className="absolute right-2 top-12 w-px h-6 bg-cyan-400/50" />
         </div>
 
-        {/* Content */}
+        {/* Content — on the left */}
         <div className="container mx-auto px-6 md:px-12 relative z-30 w-full md:w-[38%] mr-auto">
           <div className="max-w-lg">
             <motion.div
@@ -88,8 +94,9 @@ export default function ServicesSection() {
               transition={{ duration: 0.8 }}
               className="mb-12"
             >
+              <span className="text-cyan-400/60 text-xs font-mono tracking-[0.25em] uppercase block mb-3">What We Build</span>
               <h2 className="text-3xl md:text-5xl font-bold mb-5 text-white">Digital Capabilities</h2>
-              <div className="w-16 h-0.5 bg-cyan-400 shadow-[0_0_12px_rgba(0,255,255,0.5)]" />
+              <div className="w-16 h-px bg-gradient-to-r from-cyan-400/80 to-transparent" />
             </motion.div>
 
             <div className="flex flex-col gap-6">
@@ -100,7 +107,7 @@ export default function ServicesSection() {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true, margin: "-50px" }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="group cursor-default relative"
+                  className="group cursor-default relative pl-4 border-l border-white/10 hover:border-cyan-400/50 transition-colors duration-500"
                 >
                   <h3 className="text-xl md:text-2xl font-bold text-white transition-all duration-500 ease-out-expo mb-1 flex items-center gap-3">
                     <span className="opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300">
@@ -108,7 +115,7 @@ export default function ServicesSection() {
                     </span>
                     {service.title}
                   </h3>
-                  <p className="text-white/70 font-medium text-sm md:text-base max-w-sm group-hover:text-white/90 transition-colors duration-300">
+                  <p className="text-white/60 font-medium text-sm md:text-base max-w-sm group-hover:text-white/80 transition-colors duration-300">
                     {service.description}
                   </p>
                 </motion.div>

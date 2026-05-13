@@ -1,27 +1,26 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 
 export default function SoundToggle() {
   const [isPlaying, setIsPlaying] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioRef = useRef<{ audioCtx: AudioContext; gainNode: GainNode } | null>(null);
 
-  useEffect(() => {
-    // Create an audio element with ocean ambience
-    // Using a generated ambient tone via Web Audio API
+  const initAudio = useCallback(() => {
+    if (audioRef.current) return;
+
     const audioCtx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
-    
-    // Create ocean-like ambient noise
-    const bufferSize = 2 * audioCtx.sampleRate;
+
+    // Generate pink noise (ocean ambience)
+    const bufferSize = audioCtx.sampleRate; // 1 second buffer (half of before)
     const noiseBuffer = audioCtx.createBuffer(2, bufferSize, audioCtx.sampleRate);
-    
+
     for (let channel = 0; channel < 2; channel++) {
       const output = noiseBuffer.getChannelData(channel);
       let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
       for (let i = 0; i < bufferSize; i++) {
         const white = Math.random() * 2 - 1;
-        // Pink noise approximation — sounds like ocean
         b0 = 0.99886 * b0 + white * 0.0555179;
         b1 = 0.99332 * b1 + white * 0.0750759;
         b2 = 0.96900 * b2 + white * 0.1538520;
@@ -43,19 +42,14 @@ export default function SoundToggle() {
     gainNode.connect(audioCtx.destination);
     source.start();
 
-    // Store references for toggling
-    (audioRef as React.MutableRefObject<{ audioCtx: AudioContext; gainNode: GainNode } | null>).current = { audioCtx, gainNode };
-
-    return () => {
-      source.stop();
-      audioCtx.close();
-    };
+    audioRef.current = { audioCtx, gainNode };
   }, []);
 
   const toggleSound = () => {
-    const audio = audioRef.current as unknown as { audioCtx: AudioContext; gainNode: GainNode } | null;
+    initAudio();
+    const audio = audioRef.current;
     if (!audio) return;
-    
+
     if (isPlaying) {
       audio.gainNode.gain.linearRampToValueAtTime(0, audio.audioCtx.currentTime + 0.5);
     } else {
@@ -71,7 +65,6 @@ export default function SoundToggle() {
       className="flex items-center gap-2 text-white/50 hover:text-white transition-colors hover-target group"
       data-cursor-label={isPlaying ? 'Mute' : 'Sound'}
     >
-      {/* Sound bars animation */}
       <div className="flex items-end gap-[2px] h-3 w-4">
         {[0, 1, 2].map((i) => (
           <motion.div
@@ -79,9 +72,7 @@ export default function SoundToggle() {
             className="w-[2px] bg-current rounded-full"
             animate={
               isPlaying
-                ? {
-                    height: ['4px', '12px', '6px', '10px', '4px'],
-                  }
+                ? { height: ['4px', '12px', '6px', '10px', '4px'] }
                 : { height: '4px' }
             }
             transition={{
