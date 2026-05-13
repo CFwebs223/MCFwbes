@@ -12,22 +12,25 @@ export default function HeroOceanScene() {
     setIsMobile(window.matchMedia('(pointer: coarse)').matches);
   }, []);
 
-  // Scroll physics — 200vh: enough room for the 24s scrub
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"]
   });
 
-  // Text fade — compositor-only
-  const textOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
-  const textY = useTransform(scrollYProgress, [0, 0.15], [0, -60]);
+  // Text fades IN at end of scroll (was fading OUT at start)
+  const textOpacity = useTransform(scrollYProgress, [0.65, 0.82], [0, 1]);
+  const textY = useTransform(scrollYProgress, [0.65, 0.82], [60, 0]);
 
-  // Branding — compositor-only
-  const brandingOpacity = useTransform(scrollYProgress, [0.65, 0.8], [0, 1]);
-  const brandingScale = useTransform(scrollYProgress, [0.65, 0.9], [0.92, 1.02]);
-  const brandingY = useTransform(scrollYProgress, [0.65, 0.8], [30, 0]);
+  // Branding — appears even later
+  const brandingOpacity = useTransform(scrollYProgress, [0.75, 0.88], [0, 1]);
+  const brandingScale = useTransform(scrollYProgress, [0.75, 0.95], [0.92, 1.02]);
+  const brandingY = useTransform(scrollYProgress, [0.75, 0.88], [30, 0]);
 
-  // Mouse parallax — desktop only, transform only
+  // Scroll button fades out as text appears
+  const buttonOpacity = useTransform(scrollYProgress, [0.5, 0.7], [1, 0]);
+  const buttonScale = useTransform(scrollYProgress, [0.5, 0.7], [1, 0.8]);
+
+  // Mouse parallax
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const smoothMouseX = useSpring(mouseX, { stiffness: 40, damping: 20 });
@@ -38,8 +41,6 @@ export default function HeroOceanScene() {
     mouseY.set((e.clientY / window.innerHeight - 0.5) * 30);
   };
 
-  // Frame-accurate progress — only updates state when the displayed frame changes
-  // With 120 frames across 200vh, that's max 120 state updates total
   const TOTAL_FRAMES = 120;
   const [frameIndex, setFrameIndex] = useState(0);
   const lastFrameRef = useRef(-1);
@@ -72,7 +73,7 @@ export default function HeroOceanScene() {
     >
       <div className="sticky top-0 w-full h-screen overflow-hidden flex flex-col justify-center bg-black">
 
-        {/* Frame sequence — no video, no seeking, no codec decode */}
+        {/* Frame sequence */}
         <motion.div
           className="absolute inset-0 z-0"
           style={!isMobile ? { x: smoothMouseX, y: smoothMouseY } : {}}
@@ -83,12 +84,11 @@ export default function HeroOceanScene() {
             progress={frameIndex / TOTAL_FRAMES}
             className="brightness-[0.85]"
           />
-
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,10,5,0.7)_100%)] pointer-events-none" />
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-[#020a06]/90 pointer-events-none" />
         </motion.div>
 
-        {/* Branding */}
+        {/* Branding — appears at end */}
         <motion.div
           className="absolute inset-0 z-20 flex flex-col items-center justify-center pointer-events-none"
           style={{ opacity: brandingOpacity, scale: brandingScale, y: brandingY }}
@@ -105,7 +105,7 @@ export default function HeroOceanScene() {
 
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent z-30" />
 
-        {/* Text — compositor-only */}
+        {/* Text — hidden initially, fades in at end of scroll */}
         <motion.div
           className="relative z-10 w-full max-w-[1400px] mx-auto px-6 md:px-12 lg:px-20 pt-32 pointer-events-none"
           style={{ opacity: textOpacity, y: textY }}
@@ -149,22 +149,26 @@ export default function HeroOceanScene() {
           </div>
         </motion.div>
 
-        {/* Scroll Indicator */}
+        {/* Big centered scroll button — visible at start, fades as text appears */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 2, delay: 2.5 }}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center justify-center cursor-pointer z-20 group"
-          style={{ opacity: textOpacity }}
-          onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
+          className="absolute inset-0 z-15 flex flex-col items-center justify-center cursor-pointer"
+          style={{ opacity: buttonOpacity, scale: buttonScale }}
+          onClick={() => {
+            const el = document.getElementById('services');
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+          }}
         >
-          <span className="text-white/40 text-[10px] font-medium tracking-[0.3em] uppercase mb-4 group-hover:text-emerald-400 transition-colors">Descend</span>
-          <div className="w-px h-16 bg-white/20 relative overflow-hidden">
-            <motion.div
-              className="w-full h-1/2 bg-emerald-400 absolute top-0 left-0"
-              animate={{ y: ["-100%", "200%"] }}
-              transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
-            />
+          <div className="flex flex-col items-center gap-6">
+            <div className="w-12 h-20 md:w-16 md:h-24 rounded-full border-2 border-white/30 flex items-start justify-center p-3">
+              <motion.div
+                className="w-1.5 h-4 md:w-2 md:h-5 rounded-full bg-white"
+                animate={{ y: [0, 12, 0] }}
+                transition={{ repeat: Infinity, duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
+              />
+            </div>
+            <span className="text-white/50 text-xs md:text-sm font-medium tracking-[0.35em] uppercase">
+              Scroll to explore
+            </span>
           </div>
         </motion.div>
 

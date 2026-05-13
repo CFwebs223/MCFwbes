@@ -1,99 +1,72 @@
 'use client';
 
-import { useRef, useEffect, useState } from 'react';
-import { useScroll, useMotionValueEvent } from 'framer-motion';
-import FrameSequence from './FrameSequence';
+import { useRef, useEffect } from 'react';
+import { motion } from 'framer-motion';
 
-const TOTAL_FRAMES = 40;
+const steps = [
+  { number: '01', title: 'Discovery', desc: 'We learn your business, goals, and audience to define the scope.' },
+  { number: '02', title: 'Design & Build', desc: 'We craft a custom design and develop it with clean, performant code.' },
+  { number: '03', title: 'Review & Refine', desc: 'You review the live draft. We iterate until it is exactly right.' },
+  { number: '04', title: 'Launch & Grow', desc: 'We deploy, optimize, and hand over everything you need to succeed.' },
+];
 
 export default function ProcessSection() {
-  const containerRef = useRef<HTMLElement>(null);
-  const [timecode, setTimecode] = useState("00:00:00:00");
-  const lastFrameRef = useRef(-1);
-
-  // Frame-accurate scroll progress — only updates when frame changes
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"]
-  });
-
-  const [frameIndex, setFrameIndex] = useState(0);
-  useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    const idx = Math.min(Math.floor(latest * TOTAL_FRAMES), TOTAL_FRAMES - 1);
-    if (idx !== lastFrameRef.current) {
-      lastFrameRef.current = idx;
-      setFrameIndex(idx);
-    }
-  });
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      const now = new Date();
-      const s = now.getSeconds().toString().padStart(2, '0');
-      const m = now.getMinutes().toString().padStart(2, '0');
-      setTimecode(`01:${m}:${s}:${Math.floor(performance.now() % 99).toString().padStart(2, '0')}`);
-    }, 100);
-
-    return () => { clearInterval(interval); };
+    const video = videoRef.current;
+    if (!video) return;
+    video.play().catch(() => {});
   }, []);
 
   return (
-    <section id="process" ref={containerRef} className="relative h-[300vh] w-full bg-black">
-      <div className="sticky top-0 w-full h-screen overflow-hidden">
+    <section ref={sectionRef} id="process" className="relative h-screen w-full bg-black overflow-hidden">
+      {/* Background video — normal playback, smooth and cinematic */}
+      <video
+        ref={videoRef}
+        loop
+        muted
+        playsInline
+        autoPlay
+        className="absolute inset-0 w-full h-full object-cover z-0"
+      >
+        <source src="/videos/tropical.mp4" type="video/mp4" />
+      </video>
 
-        {/* Frame sequence replacing the video */}
-        <FrameSequence
-          path="/frames/process/frame_"
-          totalFrames={TOTAL_FRAMES}
-          progress={frameIndex / TOTAL_FRAMES}
-        />
+      {/* Soft vignette for readability */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_30%,rgba(0,0,0,0.3)_100%)] z-10 pointer-events-none" />
 
-        {/* Premium Cinematic HUD Decorations */}
-        <div className="absolute inset-0 pointer-events-none z-10 flex flex-col justify-between p-8 md:p-12">
+      {/* Content — black text on top half */}
+      <div className="absolute inset-0 z-20 flex flex-col justify-start pt-24 md:pt-32 px-6 md:px-16 lg:px-24">
+        <div className="max-w-5xl mx-auto w-full">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="mb-12 md:mb-16"
+          >
+            <span className="text-black/40 text-xs font-mono tracking-[0.3em] uppercase">How We Work</span>
+          </motion.div>
 
-          {/* Subtle Scanlines overlay */}
-          <div className="absolute inset-0 opacity-[0.03] mix-blend-overlay bg-[linear-gradient(transparent_50%,rgba(0,0,0,1)_50%)] bg-[length:100%_4px]" />
-
-          {/* Heavy Vignette to frame the video */}
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_30%,rgba(0,0,0,0.8)_100%)]" />
-
-          {/* Top Row HUD */}
-          <div className="relative z-20 flex justify-between items-start text-cyan-500/60 font-mono text-xs tracking-[0.2em] uppercase">
-            <div className="flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_rgba(255,0,0,0.8)]" />
-              <span>REC // SYSTEM_ACTIVE</span>
-            </div>
-            <div className="text-right">
-              <span className="block opacity-50 mb-1">DATA_STREAM</span>
-              <span className="text-white/80">{timecode}</span>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-6">
+            {steps.map((step, i) => (
+              <motion.div
+                key={step.number}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: i * 0.15, ease: [0.16, 1, 0.3, 1] }}
+                className="group"
+              >
+                <span className="text-black/20 text-4xl md:text-5xl font-light tabular-nums block mb-3">{step.number}</span>
+                <h3 className="text-black/90 text-xl md:text-2xl font-medium mb-2">{step.title}</h3>
+                <p className="text-black/60 text-sm md:text-base font-light leading-relaxed max-w-xs">{step.desc}</p>
+              </motion.div>
+            ))}
           </div>
-
-          {/* Center Targeting / Focus Brackets */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[80vw] md:max-w-[800px] aspect-video border border-white/[0.05] flex items-center justify-center">
-             <div className="absolute -top-[1px] -left-[1px] w-8 h-8 border-t border-l border-cyan-400/50" />
-             <div className="absolute -top-[1px] -right-[1px] w-8 h-8 border-t border-r border-cyan-400/50" />
-             <div className="absolute -bottom-[1px] -left-[1px] w-8 h-8 border-b border-l border-cyan-400/50" />
-             <div className="absolute -bottom-[1px] -right-[1px] w-8 h-8 border-b border-r border-cyan-400/50" />
-             <div className="w-12 h-px bg-cyan-400/30 absolute" />
-             <div className="w-px h-12 bg-cyan-400/30 absolute" />
-          </div>
-
-          {/* Bottom Row HUD */}
-          <div className="relative z-20 flex justify-between items-end text-white/30 font-mono text-[10px] tracking-widest">
-            <div>
-              <p>COORD: 34.0522° N, 118.2437° W</p>
-              <p>ZOOM: 2.4X OPTICAL</p>
-            </div>
-            <div className="flex gap-1">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className={`w-1 h-3 ${i < 4 ? 'bg-cyan-500/50' : 'bg-white/10'}`} />
-              ))}
-            </div>
-          </div>
-
         </div>
-
       </div>
     </section>
   );
