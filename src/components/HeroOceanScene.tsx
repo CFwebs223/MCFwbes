@@ -1,88 +1,41 @@
 'use client';
 
 import { useRef, useEffect, useState } from 'react';
-import { motion, useScroll, useTransform, useSpring, useMotionValueEvent, useMotionValue } from 'framer-motion';
-
-const VIDEO_DURATION = 24.0;
-// Throttle video seeking to max once per 150ms — prevents decoder overload
-const SEEK_THROTTLE = 150;
+import { motion, useScroll, useTransform, useSpring, useMotionValue } from 'framer-motion';
 
 export default function HeroOceanScene() {
   const containerRef = useRef<HTMLElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
   const [isMobile, setIsMobile] = useState(false);
-  const [videoReady, setVideoReady] = useState(false);
-  const lastTimeRef = useRef(-1);
-  const lastSeekTimeRef = useRef(0);
 
   useEffect(() => {
     setIsMobile(window.matchMedia('(pointer: coarse)').matches);
   }, []);
 
-  // Wait for video to be loaded before allowing seeks
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-    const onCanPlay = () => setVideoReady(true);
-    if (video.readyState >= 3) setVideoReady(true);
-    video.addEventListener('canplaythrough', onCanPlay);
-    return () => video.removeEventListener('canplaythrough', onCanPlay);
-  }, []);
-
-  // 1. SCROLL PHYSICS — 400vh balances scroll feel with performance
+  // Compositor-only scroll effects: opacity + transform only
+  // Video plays normally at 1x — NO currentTime seeking, NO rAF, NO decoder overhead
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"]
   });
 
-  // Text fade
-  const textOpacity = useTransform(scrollYProgress, [0, 0.12], [1, 0]);
-  const textY = useTransform(scrollYProgress, [0, 0.12], [0, -80]);
+  const textOpacity = useTransform(scrollYProgress, [0, 0.25], [1, 0]);
+  const textY = useTransform(scrollYProgress, [0, 0.25], [0, -60]);
 
-  // Throttled video seeking — at most once per SEEK_THROTTLE ms
-  // No rAF loop, no polling, zero CPU when idle
-  useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    const video = videoRef.current;
-    if (!video || !videoReady) return;
+  const brandingOpacity = useTransform(scrollYProgress, [0.6, 0.75], [0, 1]);
+  const brandingScale = useTransform(scrollYProgress, [0.6, 0.85], [0.92, 1.02]);
+  const brandingY = useTransform(scrollYProgress, [0.6, 0.75], [30, 0]);
 
-    const now = Date.now();
-    const targetTime = latest * VIDEO_DURATION;
-    const threshold = isMobile ? 0.12 : 0.06;
-    const timeDiff = Math.abs(lastTimeRef.current - targetTime);
-    if (timeDiff < threshold) return;
-
-    // Throttle: only seek every SEEK_THROTTLE ms
-    if (now - lastSeekTimeRef.current >= SEEK_THROTTLE) {
-      video.currentTime = targetTime;
-      lastTimeRef.current = targetTime;
-      lastSeekTimeRef.current = now;
-    }
-  });
-
-  // Branding fade in at the end
-  const brandingOpacity = useTransform(scrollYProgress, [0.7, 0.8], [0, 1]);
-  const brandingScale = useTransform(scrollYProgress, [0.7, 1], [0.9, 1.05]);
-  const brandingY = useTransform(scrollYProgress, [0.7, 0.8], [40, 0]);
-
-  // 2. MOUSE INTERACTION & PARALLAX (desktop only)
+  // Mouse parallax — only transform, desktop only
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
-  const cursorX = useMotionValue(typeof window !== 'undefined' ? window.innerWidth / 2 : 0);
-  const cursorY = useMotionValue(typeof window !== 'undefined' ? window.innerHeight / 2 : 0);
+  const smoothMouseX = useSpring(mouseX, { stiffness: 40, damping: 20 });
+  const smoothMouseY = useSpring(mouseY, { stiffness: 40, damping: 20 });
 
   const handleMouseMove = isMobile ? undefined : (e: React.MouseEvent) => {
     const { clientX, clientY } = e;
-    const { innerWidth, innerHeight } = window;
-    mouseX.set((clientX / innerWidth - 0.5) * 40);
-    mouseY.set((clientY / innerHeight - 0.5) * 40);
-    cursorX.set(clientX);
-    cursorY.set(clientY);
+    mouseX.set((clientX / window.innerWidth - 0.5) * 30);
+    mouseY.set((clientY / window.innerHeight - 0.5) * 30);
   };
-
-  const smoothMouseX = useSpring(mouseX, { stiffness: 40, damping: 20 });
-  const smoothMouseY = useSpring(mouseY, { stiffness: 40, damping: 20 });
-  const smoothCursorX = useSpring(cursorX, { stiffness: 100, damping: 30 });
-  const smoothCursorY = useSpring(cursorY, { stiffness: 100, damping: 30 });
 
   const containerVars = {
     hidden: { opacity: 0 },
@@ -97,37 +50,23 @@ export default function HeroOceanScene() {
   return (
     <section
       ref={containerRef}
-      className="relative h-[400vh] w-full bg-black"
+      className="relative h-[150vh] w-full bg-black"
       onMouseMove={handleMouseMove}
     >
       <div className="sticky top-0 w-full h-screen overflow-hidden flex flex-col justify-center bg-black">
 
-        {/* Ambient Cursor Ripple (desktop only) */}
-        {!isMobile && (
-          <motion.div
-            className="fixed w-[40rem] h-[40rem] rounded-full pointer-events-none z-30"
-            style={{
-              x: smoothCursorX,
-              y: smoothCursorY,
-              translateX: '-50%',
-              translateY: '-50%',
-              background: 'radial-gradient(circle, rgba(0,255,200,0.2) 0%, rgba(0,255,200,0) 60%)',
-              willChange: 'transform',
-            }}
-          />
-        )}
-
-        {/* Video Engine Renderer */}
+        {/* Video — normal autoplay, NO seeking, GPU-decoded pipeline */}
         <motion.div
-          className="absolute inset-0 z-0 flex items-center justify-center will-change-transform"
+          className="absolute inset-0 z-0"
           style={!isMobile ? { x: smoothMouseX, y: smoothMouseY } : {}}
         >
           <video
-            ref={videoRef}
+            autoPlay
+            loop
             muted
             playsInline
             preload="auto"
-            className="absolute inset-0 w-full h-full object-cover object-top brightness-[0.85] will-change-transform"
+            className="absolute inset-0 w-full h-full object-cover object-top brightness-[0.85]"
           >
             <source src="/videos/hero_optimized.mp4" type="video/mp4" />
           </video>
@@ -146,18 +85,14 @@ export default function HeroOceanScene() {
             <span className="text-6xl md:text-8xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-yellow-200 via-yellow-500 to-yellow-800 drop-shadow-[0_0_30px_rgba(234,179,8,0.4)]">C</span>
             <span className="text-6xl md:text-8xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-yellow-200 via-yellow-500 to-yellow-800 drop-shadow-[0_0_30px_rgba(234,179,8,0.4)]">F</span>
           </div>
-          <h2 className="text-2xl md:text-4xl font-medium tracking-[0.3em] text-white uppercase mb-4 drop-shadow-xl">
-            Websites
-          </h2>
+          <h2 className="text-2xl md:text-4xl font-medium tracking-[0.3em] text-white uppercase mb-4 drop-shadow-xl">Websites</h2>
           <div className="w-16 h-px bg-gradient-to-r from-transparent via-yellow-500 to-transparent mb-4" />
-          <p className="text-sm md:text-base font-light tracking-[0.2em] text-yellow-500/80 uppercase">
-            Premium Web Design & Development
-          </p>
+          <p className="text-sm md:text-base font-light tracking-[0.2em] text-yellow-500/80 uppercase">Premium Web Design & Development</p>
         </motion.div>
 
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent z-30" />
 
-        {/* Premium Typography Container */}
+        {/* Text — compositor-only opacity + transform */}
         <motion.div
           className="relative z-10 w-full max-w-[1400px] mx-auto px-6 md:px-12 lg:px-20 pt-32 pointer-events-none"
           style={{ opacity: textOpacity, y: textY }}
@@ -169,9 +104,7 @@ export default function HeroOceanScene() {
                   <motion.div variants={lineVars}>Digital Experiences</motion.div>
                 </div>
                 <div className="overflow-hidden pb-4">
-                  <motion.div variants={lineVars} className="italic font-light text-emerald-400 drop-shadow-[0_0_15px_rgba(16,185,129,0.3)]">
-                    That Move Effortlessly.
-                  </motion.div>
+                  <motion.div variants={lineVars} className="italic font-light text-emerald-400 drop-shadow-[0_0_15px_rgba(16,185,129,0.3)]">That Move Effortlessly.</motion.div>
                 </div>
               </h1>
             </motion.div>
@@ -207,7 +140,7 @@ export default function HeroOceanScene() {
           </div>
         </motion.div>
 
-        {/* Gentle Scroll Indicator */}
+        {/* Scroll Indicator */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
