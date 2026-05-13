@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useEffect, useState, useCallback } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { motion, useScroll, useTransform, useSpring, useMotionValueEvent, useMotionValue } from 'framer-motion';
 
 const VIDEO_DURATION = 24.0;
@@ -9,30 +9,42 @@ export default function HeroOceanScene() {
   const containerRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
   const lastTimeRef = useRef(-1);
 
   useEffect(() => {
     setIsMobile(window.matchMedia('(pointer: coarse)').matches);
   }, []);
 
-  // 1. SCROLL PHYSICS
+  // Wait for video to be fully loaded before allowing seeks
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const onCanPlay = () => setVideoReady(true);
+    // Also check if it's already ready
+    if (video.readyState >= 3) setVideoReady(true);
+    video.addEventListener('canplaythrough', onCanPlay);
+    return () => video.removeEventListener('canplaythrough', onCanPlay);
+  }, []);
+
+  // 1. SCROLL PHYSICS — reduced to 200vh for way less scroll work
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"]
   });
 
   // Text fade out on scroll
-  const textOpacity = useTransform(scrollYProgress, [0, 0.1], [1, 0]);
-  const textY = useTransform(scrollYProgress, [0, 0.1], [0, -100]);
+  const textOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
+  const textY = useTransform(scrollYProgress, [0, 0.15], [0, -80]);
 
-  // Event-driven video scrubbing — NO rAF loop, zero CPU when idle
-  // Only seeks video when scrollYProgress actually changes
+  // Event-driven video scrubbing — only when video is loaded AND user scrolls
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
     const video = videoRef.current;
-    if (!video || video.readyState < 2) return;
+    if (!video || !videoReady) return;
 
     const targetTime = latest * VIDEO_DURATION;
-    const throttle = isMobile ? 0.1 : 0.05;
+    const throttle = isMobile ? 0.12 : 0.06;
     if (Math.abs(lastTimeRef.current - targetTime) > throttle) {
       video.currentTime = targetTime;
       lastTimeRef.current = targetTime;
@@ -40,9 +52,9 @@ export default function HeroOceanScene() {
   });
 
   // Branding fade in at the very end
-  const brandingOpacity = useTransform(scrollYProgress, [0.8, 0.85], [0, 1]);
-  const brandingScale = useTransform(scrollYProgress, [0.8, 1], [0.9, 1.05]);
-  const brandingY = useTransform(scrollYProgress, [0.8, 0.85], [40, 0]);
+  const brandingOpacity = useTransform(scrollYProgress, [0.75, 0.82], [0, 1]);
+  const brandingScale = useTransform(scrollYProgress, [0.75, 1], [0.9, 1.05]);
+  const brandingY = useTransform(scrollYProgress, [0.75, 0.82], [40, 0]);
 
   // 2. MOUSE INTERACTION & PARALLAX (desktop only)
   const mouseX = useMotionValue(0);
@@ -77,7 +89,8 @@ export default function HeroOceanScene() {
   return (
     <section
       ref={containerRef}
-      className="relative h-[800vh] w-full bg-black"
+      // Reduced from 800vh to 200vh — 4x less scroll DOM, way less lag
+      className="relative h-[200vh] w-full bg-black"
       onMouseMove={handleMouseMove}
     >
       <div className="sticky top-0 w-full h-screen overflow-hidden flex flex-col justify-center bg-black">
