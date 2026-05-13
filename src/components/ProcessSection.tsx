@@ -2,12 +2,14 @@
 
 import { useRef, useEffect, useState } from 'react';
 import { useScroll, useVelocity, useSpring, useMotionValueEvent } from 'framer-motion';
+import FrameSequence from './FrameSequence';
+
+const TOTAL_FRAMES = 40;
 
 export default function ProcessSection() {
   const containerRef = useRef<HTMLElement>(null);
-  const scrollVideoRef = useRef<HTMLVideoElement>(null);
   const [timecode, setTimecode] = useState("00:00:00:00");
-  const [videoFailed, setVideoFailed] = useState(false);
+  const lastFrameRef = useRef(-1);
 
   // Use GLOBAL scroll so velocity tracks across entire page
   const { scrollY } = useScroll();
@@ -20,46 +22,30 @@ export default function ProcessSection() {
 
   const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useMotionValueEvent(smoothVelocity, "change", (latestVelocity) => {
-    if (!scrollVideoRef.current || videoFailed) return;
+  // Frame-accurate scroll progress — only updates when frame changes
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"]
+  });
 
-    const speed = Math.abs(latestVelocity);
-    if (speed > 5) {
-      // Scrolling: speed up
-      const targetRate = 1.0 + (speed / 1000) * 1.5;
-      scrollVideoRef.current.playbackRate = Math.min(targetRate, 3.0);
-      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
-      scrollTimeoutRef.current = setTimeout(() => {
-        if (scrollVideoRef.current) {
-          scrollVideoRef.current.playbackRate = 1.0;
-        }
-      }, 300);
+  const [frameIndex, setFrameIndex] = useState(0);
+  useMotionValueEvent(scrollYProgress, "change", (latest) => {
+    const idx = Math.min(Math.floor(latest * TOTAL_FRAMES), TOTAL_FRAMES - 1);
+    if (idx !== lastFrameRef.current) {
+      lastFrameRef.current = idx;
+      setFrameIndex(idx);
     }
   });
 
-  // Fallback: if video fails, show a gradient background instead
-  // This prevents the "blank video" issue entirely
-  useEffect(() => {
-    const video = scrollVideoRef.current;
-    if (!video) return;
-    video.playbackRate = 1.0;
-
-    // Try playing, if it fails mark as failed
-    const playPromise = video.play();
-    if (playPromise) {
-      playPromise.catch(() => {
-        setVideoFailed(true);
-      });
+  // Scroll velocity for playback rate display
+  useMotionValueEvent(smoothVelocity, "change", (latestVelocity) => {
+    if (Math.abs(latestVelocity) > 5) {
+      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+      scrollTimeoutRef.current = setTimeout(() => {}, 300);
     }
+  });
 
-    const handleVisibility = () => {
-      if (document.visibilityState === 'visible' && !videoFailed) {
-        video.play().catch(() => setVideoFailed(true));
-      }
-    };
-    document.addEventListener('visibilitychange', handleVisibility);
-
-    // Timecode HUD — updates at 10fps, no need for 20fps
+  useEffect(() => {
     const interval = setInterval(() => {
       const now = new Date();
       const s = now.getSeconds().toString().padStart(2, '0');
@@ -69,31 +55,20 @@ export default function ProcessSection() {
 
     return () => {
       clearInterval(interval);
-      document.removeEventListener('visibilitychange', handleVisibility);
       if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
     };
-  }, [videoFailed]);
+  }, []);
 
   return (
     <section id="process" ref={containerRef} className="relative h-[300vh] w-full bg-black">
       <div className="sticky top-0 w-full h-screen overflow-hidden">
 
-        {/* Background: video or fallback gradient */}
-        {!videoFailed ? (
-          <video
-            ref={scrollVideoRef}
-            loop
-            muted
-            playsInline
-            autoPlay
-            className="absolute inset-0 w-full h-full object-cover z-0"
-            onError={() => setVideoFailed(true)}
-          >
-            <source src="/videos/0510(9)_optimized.mp4" type="video/mp4" />
-          </video>
-        ) : (
-          <div className="absolute inset-0 z-0 bg-gradient-to-br from-[#0a1628] via-[#0d0d1a] to-[#1a0a1a]" />
-        )}
+        {/* Frame sequence replacing the video */}
+        <FrameSequence
+          path="/frames/process/frame_"
+          totalFrames={TOTAL_FRAMES}
+          progress={frameIndex / TOTAL_FRAMES}
+        />
 
         {/* Premium Cinematic HUD Decorations */}
         <div className="absolute inset-0 pointer-events-none z-10 flex flex-col justify-between p-8 md:p-12">

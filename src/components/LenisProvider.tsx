@@ -10,13 +10,13 @@ export default function LenisProvider({ children }: { children: ReactNode }) {
     const isMobile = window.matchMedia('(pointer: coarse)').matches;
 
     const lenis = new Lenis({
-      duration: isMobile ? 1.2 : 1.8,
+      duration: isMobile ? 2.0 : 3.0,
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: 'vertical',
       gestureOrientation: 'vertical',
       smoothWheel: !isMobile,
-      wheelMultiplier: 0.8,
-      touchMultiplier: isMobile ? 1 : 1.2,
+      wheelMultiplier: 0.5,
+      touchMultiplier: isMobile ? 0.8 : 1.0,
       infinite: false,
     });
 
