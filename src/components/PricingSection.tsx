@@ -52,9 +52,10 @@ export default function PricingSection() {
             transition={{ duration: 0.8 }}
             className="mb-12"
           >
-            <p className="text-yellow-500/80 font-light tracking-[0.2em] uppercase text-sm mb-4">Premium Development</p>
+            <p className="text-yellow-500/80 font-light tracking-[0.2em] uppercase text-sm mb-4 drop-shadow-[0_0_10px_rgba(234,179,8,0.15)]">Premium Development</p>
             <h2 className="text-3xl md:text-5xl font-medium drop-shadow-xl text-white tracking-wide">Investment</h2>
             <div className="h-px w-24 bg-gradient-to-r from-yellow-500/50 to-transparent mt-6" />
+            <div className="absolute -top-20 left-0 w-64 h-64 bg-gradient-to-r from-yellow-500/5 to-transparent blur-3xl pointer-events-none" />
           </motion.div>
 
           <div className="flex flex-col gap-6">
@@ -65,25 +66,29 @@ export default function PricingSection() {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.6, delay: index * 0.15 }}
-                className={`relative glass p-6 md:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between border-l-2 backdrop-blur-md ${tier.popular ? 'border-yellow-500 bg-yellow-950/10' : 'border-white/20 bg-white/5'}`}
+                className={`relative group/premium p-6 md:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between border-l-2 backdrop-blur-md transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${tier.popular ? 'border-yellow-500 bg-yellow-950/10' : 'border-white/20 bg-white/[0.03] hover:bg-white/[0.06]'}`}
               >
                 <div className="flex-1 mb-4 sm:mb-0">
                   <div className="flex items-center gap-3 mb-1">
-                    <h3 className="text-xl font-medium text-white">{tier.name}</h3>
+                    <h3 className="text-xl font-medium text-white group-hover/premium:text-white transition-colors duration-300">{tier.name}</h3>
                     {tier.popular && (
-                      <span className="bg-yellow-500 text-black text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider">
+                      <span className="bg-yellow-500 text-black text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider shadow-[0_0_15px_rgba(234,179,8,0.3)]">
                         Popular
                       </span>
                     )}
                   </div>
-                  <p className="text-white/50 text-sm font-light max-w-xs">{tier.description}</p>
+                  <p className="text-white/50 text-sm font-light max-w-xs group-hover/premium:text-white/70 transition-colors duration-300">{tier.description}</p>
                 </div>
-                
+
                 <div className="flex flex-col items-start sm:items-end justify-between sm:ml-6">
-                  <span className="text-3xl font-light text-white mb-3">{tier.price}</span>
-                  <a 
-                    href="#contact" 
-                    className={`px-6 py-2 rounded-full text-sm font-medium transition-colors whitespace-nowrap ${tier.popular ? 'bg-white text-black hover:bg-white/90' : 'glass border border-white/20 text-white hover:bg-white/10'}`}
+                  <span className="text-3xl font-light text-white mb-3 group-hover/premium:drop-shadow-[0_0_20px_rgba(255,255,255,0.1)] transition-all duration-300">{tier.price}</span>
+                  <a
+                    href="#contact"
+                    className={`px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] whitespace-nowrap hover-target ${tier.popular ? 'bg-white text-black hover:bg-white/90 shadow-[0_0_20px_rgba(255,255,255,0.1)]' : 'glass border border-white/20 text-white hover:bg-white/10'}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+                    }}
                   >
                     Start Project
                   </a>
@@ -100,8 +105,8 @@ export default function PricingSection() {
             whileInView={{ opacity: 1, y: 0, rotateY: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="relative w-full max-w-sm aspect-[9/16] rounded-3xl overflow-hidden glass border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.8)]"
-            style={{ perspective: "1000px" }}
+            className="relative w-full max-w-sm aspect-[9/16] rounded-3xl overflow-hidden glass border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.8)] edge-glow"
+            style={{ perspective: "1000px", willChange: "transform" }}
           >
             <video
               ref={videoRef}

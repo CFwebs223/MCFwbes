@@ -30,9 +30,12 @@ export default function ProcessSection() {
   });
 
   useEffect(() => {
-    if (scrollVideoRef.current) {
-      scrollVideoRef.current.play().catch(() => {});
-    }
+    const video = scrollVideoRef.current;
+    if (!video) return;
+
+    const isMobile = window.matchMedia('(pointer: coarse)').matches;
+
+    video.play().catch(() => {});
 
     // Fake timecode generator for the HUD
     const interval = setInterval(() => {

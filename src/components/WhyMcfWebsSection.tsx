@@ -88,7 +88,7 @@ export default function WhyMcfWebsSection() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="relative w-full max-w-sm aspect-[9/16] rounded-3xl overflow-hidden glass border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.8)]"
-            style={{ perspective: "1000px" }}
+            style={{ perspective: "1000px", willChange: "transform" }}
           >
             {/* The actual video, un-stretched, un-filtered */}
             <video

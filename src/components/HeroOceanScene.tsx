@@ -27,15 +27,19 @@ export default function HeroOceanScene() {
 
   // Hardware-synced render loop for absolute zero-latency video scrubbing
   useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
     let frameId: number;
     let lastTime = -1;
+    // Throttle threshold: skip frames if they're within ~2px scroll worth of time
+    const THROTTLE_THRESHOLD = 0.05;
 
     const renderLoop = () => {
-      if (videoRef.current) {
+      if (video.readyState >= 2) {
         const targetTime = progressRef.current * VIDEO_DURATION;
-        // Only update if the time difference is significant enough (prevents decoder thrashing)
-        if (Math.abs(lastTime - targetTime) > 0.033) {
-          videoRef.current.currentTime = targetTime;
+        if (Math.abs(lastTime - targetTime) > THROTTLE_THRESHOLD) {
+          video.currentTime = targetTime;
           lastTime = targetTime;
         }
       }
@@ -90,21 +94,22 @@ export default function HeroOceanScene() {
       onMouseMove={handleMouseMove}
     >
       <div className="sticky top-0 w-full h-screen overflow-hidden flex flex-col justify-center bg-black">
-        
+
         {/* Ambient Cursor Ripple */}
-        <motion.div 
+        <motion.div
           className="fixed w-[40rem] h-[40rem] rounded-full pointer-events-none z-30"
           style={{
-            x: smoothCursorX, 
-            y: smoothCursorY, 
-            translateX: '-50%', 
+            x: smoothCursorX,
+            y: smoothCursorY,
+            translateX: '-50%',
             translateY: '-50%',
-            background: 'radial-gradient(circle, rgba(0,255,200,0.2) 0%, rgba(0,255,200,0) 60%)'
+            background: 'radial-gradient(circle, rgba(0,255,200,0.2) 0%, rgba(0,255,200,0) 60%)',
+            willChange: 'transform',
           }}
         />
 
         {/* Video Engine Renderer (Zero CPU overhead, Zero network choke) */}
-        <motion.div 
+        <motion.div
           className="absolute inset-0 z-0 flex items-center justify-center will-change-transform"
           style={{ x: smoothMouseX, y: smoothMouseY }}
         >
@@ -141,8 +146,11 @@ export default function HeroOceanScene() {
           </p>
         </motion.div>
 
+        {/* Subtle edge glow top */}
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent z-30" />
+
         {/* Premium Typography Container */}
-        <motion.div 
+        <motion.div
           className="relative z-10 w-full max-w-[1400px] mx-auto px-6 md:px-12 lg:px-20 pt-32 pointer-events-none"
           style={{ opacity: textOpacity, y: textY }}
         >

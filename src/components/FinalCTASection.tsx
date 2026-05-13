@@ -70,54 +70,64 @@ export default function FinalCTASection() {
           </div>
 
           {/* Contact Form */}
-          <div className="max-w-2xl mx-auto glass-card p-8 md:p-12 text-left relative z-20">
-            <h3 className="text-2xl font-medium mb-6 text-white">Start Your Project</h3>
-            <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+          <div className="max-w-2xl mx-auto glass-card p-8 md:p-12 text-left relative z-20 edge-glow">
+            {/* Subtle background gradient */}
+            <div className="absolute -top-40 -right-40 w-80 h-80 bg-cyan-500/3 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-emerald-500/3 rounded-full blur-3xl pointer-events-none" />
+
+            <h3 className="text-2xl font-medium mb-6 text-white relative z-10">Start Your Project</h3>
+            <form className="space-y-6 relative z-10" onSubmit={(e) => e.preventDefault()}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-light text-white/60 mb-2">Name</label>
+                <div className="group/field">
+                  <label className="block text-sm font-light text-white/60 mb-2 group-focus-within/field:text-cyan-400/70 transition-colors duration-300">Name</label>
                   <input
                     type="text"
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500/50 transition-colors"
+                    className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-4 py-3 text-white outline-none transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] focus:border-cyan-500/40 focus:bg-white/[0.05] focus:shadow-[0_0_20px_rgba(0,255,255,0.03)] hover:border-white/20 placeholder:text-white/20"
                     placeholder="John Doe"
                     onKeyDown={spawnBubble}
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-light text-white/60 mb-2">Email</label>
+                <div className="group/field">
+                  <label className="block text-sm font-light text-white/60 mb-2 group-focus-within/field:text-cyan-400/70 transition-colors duration-300">Email</label>
                   <input
                     type="email"
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500/50 transition-colors"
+                    className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-4 py-3 text-white outline-none transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] focus:border-cyan-500/40 focus:bg-white/[0.05] focus:shadow-[0_0_20px_rgba(0,255,255,0.03)] hover:border-white/20 placeholder:text-white/20"
                     placeholder="john@company.com"
                     onKeyDown={spawnBubble}
                   />
                 </div>
               </div>
-              
-              <div>
-                <label className="block text-sm font-light text-white/60 mb-2">Service of Interest</label>
-                <select className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500/50 transition-colors appearance-none">
-                  <option>Business Websites</option>
-                  <option>AI Integrations</option>
-                  <option>Landing Pages</option>
-                  <option>E-Commerce</option>
-                  <option>Website Redesigns</option>
+
+              <div className="group/field">
+                <label className="block text-sm font-light text-white/60 mb-2 group-focus-within/field:text-cyan-400/70 transition-colors duration-300">Service of Interest</label>
+                <select className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-4 py-3 text-white outline-none transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] focus:border-cyan-500/40 focus:bg-white/[0.05] hover:border-white/20 appearance-none">
+                  <option className="bg-[#0a0a0a]">Business Websites</option>
+                  <option className="bg-[#0a0a0a]">AI Integrations</option>
+                  <option className="bg-[#0a0a0a]">Landing Pages</option>
+                  <option className="bg-[#0a0a0a]">E-Commerce</option>
+                  <option className="bg-[#0a0a0a]">Website Redesigns</option>
                 </select>
               </div>
 
-              <div>
-                <label className="block text-sm font-light text-white/60 mb-2">Project Details</label>
+              <div className="group/field">
+                <label className="block text-sm font-light text-white/60 mb-2 group-focus-within/field:text-cyan-400/70 transition-colors duration-300">Project Details</label>
                 <textarea
                   rows={4}
-                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-500/50 transition-colors"
+                  className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-4 py-3 text-white outline-none transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] focus:border-cyan-500/40 focus:bg-white/[0.05] focus:shadow-[0_0_20px_rgba(0,255,255,0.03)] hover:border-white/20 placeholder:text-white/20 resize-none"
                   placeholder="Tell us about your business and goals..."
                   onKeyDown={spawnBubble}
                 ></textarea>
               </div>
 
-              <button type="submit" className="w-full py-4 rounded-lg bg-white text-black font-medium hover:bg-white/90 transition-colors hover-target mt-4">
-                Send Message
-              </button>
+              <motion.button
+                type="submit"
+                className="w-full py-4 rounded-lg bg-white text-black font-medium transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-white/90 hover-target relative overflow-hidden group/btn"
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.99 }}
+              >
+                <span className="relative z-10">Send Message</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]" />
+              </motion.button>
             </form>
           </div>
 

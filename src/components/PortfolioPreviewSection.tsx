@@ -71,15 +71,16 @@ function BrowserMockup({ item }: { item: typeof portfolioItems[0] }) {
         rotateX,
         rotateY,
         transformStyle: "preserve-3d",
+        willChange: "transform",
       }}
       className="relative w-full aspect-[4/3] rounded-xl glass border border-white/10 overflow-hidden cursor-pointer group bg-white/5 backdrop-blur-sm hover:backdrop-blur-xl transition-all duration-500"
       data-cursor-label="View"
     >
       {/* Browser Chrome */}
-      <div className="absolute top-0 w-full h-8 bg-white/5 border-b border-white/10 flex items-center px-4 gap-2 z-30">
-        <div className="w-2.5 h-2.5 rounded-full bg-white/30" />
-        <div className="w-2.5 h-2.5 rounded-full bg-white/30" />
-        <div className="w-2.5 h-2.5 rounded-full bg-white/30" />
+      <div className="absolute top-0 w-full h-8 bg-white/[0.04] border-b border-white/[0.06] flex items-center px-4 gap-1.5 z-30">
+        <div className="w-2.5 h-2.5 rounded-full bg-red-500/40" />
+        <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/40" />
+        <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/40" />
       </div>
       
       {/* Content Area - Completely transparent idle to show background video */}
@@ -102,6 +103,13 @@ function BrowserMockup({ item }: { item: typeof portfolioItems[0] }) {
       
       {/* Glass Reflection */}
       <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/20 to-white/0 opacity-50 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-40 mix-blend-overlay" />
+
+      {/* Edge glow on hover */}
+      <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none z-40"
+        style={{
+          boxShadow: 'inset 0 0 30px rgba(0, 200, 255, 0.05), 0 0 40px rgba(0, 200, 255, 0.03)'
+        }}
+      />
     </motion.div>
   );
 }

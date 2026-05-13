@@ -36,7 +36,8 @@ const originalReviews = [
 const reviews = [...originalReviews, ...originalReviews];
 
 export default function OrbitReviews() {
-  const radius = 600; // translateZ distance
+  const isMobile = typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches;
+  const radius = isMobile ? 400 : 600; // Smaller radius on mobile for performance
   
   const rotation = useMotionValue(0);
   const isDragging = useRef(false);
@@ -71,9 +72,9 @@ export default function OrbitReviews() {
         <div className="absolute z-10 w-32 h-32 rounded-full bg-cyan-900/10 blur-3xl" />
 
         {/* 3D Rotating Carousel - Now Draggable via onPan */}
-        <motion.div 
+        <motion.div
           className="absolute inset-0 flex items-center justify-center cursor-grab active:cursor-grabbing"
-          style={{ transformStyle: 'preserve-3d', rotateY: smoothRotation }}
+          style={{ transformStyle: 'preserve-3d', rotateY: smoothRotation, willChange: 'transform' }}
           onPanStart={() => isDragging.current = true}
           onPanEnd={() => isDragging.current = false}
           onPan={(event, info) => {

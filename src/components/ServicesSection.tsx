@@ -97,15 +97,15 @@ export default function ServicesSection() {
                 className="group cursor-default relative"
               >
                 {/* Hover indicator dot */}
-                <div className="absolute -left-[27px] md:-left-[43px] top-2.5 w-1.5 h-1.5 rounded-full bg-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-[0_0_10px_rgba(0,255,255,0.8)]" />
-                
-                <h3 className="text-2xl font-light text-white/80 group-hover:text-white transition-colors drop-shadow-lg mb-2 flex items-center gap-4">
-                  <span className="opacity-40 group-hover:opacity-100 group-hover:text-cyan-400 transition-all duration-300 transform group-hover:scale-110">
+                <div className="absolute -left-[27px] md:-left-[43px] top-2.5 w-1.5 h-1.5 rounded-full bg-cyan-400 opacity-0 group-hover:opacity-100 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] shadow-[0_0_10px_rgba(0,255,255,0.8)] group-hover:shadow-[0_0_20px_rgba(0,255,255,0.6)]" />
+
+                <h3 className="text-2xl font-light text-white/80 group-hover:text-white transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] drop-shadow-lg mb-2 flex items-center gap-4">
+                  <span className="opacity-40 group-hover:opacity-100 group-hover:text-cyan-400 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] transform group-hover:scale-110 group-hover:drop-shadow-[0_0_8px_rgba(0,255,255,0.3)]">
                     {service.icon}
                   </span>
                   {service.title}
                 </h3>
-                <p className="text-white/50 font-light text-sm md:text-base max-w-sm drop-shadow-md group-hover:text-white/80 transition-colors">
+                <p className="text-white/50 font-light text-sm md:text-base max-w-sm drop-shadow-md group-hover:text-white/80 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]">
                   {service.description}
                 </p>
               </motion.div>
