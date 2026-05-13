@@ -67,7 +67,7 @@ export default function HeroOceanScene() {
   return (
     <section
       ref={containerRef}
-      className="relative h-[200vh] w-full bg-black"
+      className="relative h-[350vh] w-full bg-black"
       onMouseMove={handleMouseMove}
     >
       <div className="sticky top-0 w-full h-screen overflow-hidden flex flex-col justify-center bg-black">

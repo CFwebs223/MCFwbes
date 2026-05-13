@@ -64,7 +64,7 @@ export default function ServicesSection() {
 
         {/* Frame sequence background — scroll-linked */}
         <FrameSequence
-          path="/frames/services/frame_"
+          path="/frames/waterfall/frame_"
           totalFrames={TOTAL_FRAMES}
           progress={frameIndex / TOTAL_FRAMES}
           className="saturate-[1.3] brightness-[1.1]"
