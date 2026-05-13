@@ -4,6 +4,8 @@ import { useRef, useEffect, useState } from 'react';
 import { motion, useScroll, useTransform, useSpring, useMotionValueEvent, useMotionValue } from 'framer-motion';
 
 const VIDEO_DURATION = 24.0;
+// Throttle video seeking to max once per 150ms — prevents decoder overload
+const SEEK_THROTTLE = 150;
 
 export default function HeroOceanScene() {
   const containerRef = useRef<HTMLElement>(null);
@@ -11,50 +13,56 @@ export default function HeroOceanScene() {
   const [isMobile, setIsMobile] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
   const lastTimeRef = useRef(-1);
+  const lastSeekTimeRef = useRef(0);
 
   useEffect(() => {
     setIsMobile(window.matchMedia('(pointer: coarse)').matches);
   }, []);
 
-  // Wait for video to be fully loaded before allowing seeks
+  // Wait for video to be loaded before allowing seeks
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-
     const onCanPlay = () => setVideoReady(true);
-    // Also check if it's already ready
     if (video.readyState >= 3) setVideoReady(true);
     video.addEventListener('canplaythrough', onCanPlay);
     return () => video.removeEventListener('canplaythrough', onCanPlay);
   }, []);
 
-  // 1. SCROLL PHYSICS — reduced to 200vh for way less scroll work
+  // 1. SCROLL PHYSICS — 400vh balances scroll feel with performance
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"]
   });
 
-  // Text fade out on scroll
-  const textOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
-  const textY = useTransform(scrollYProgress, [0, 0.15], [0, -80]);
+  // Text fade
+  const textOpacity = useTransform(scrollYProgress, [0, 0.12], [1, 0]);
+  const textY = useTransform(scrollYProgress, [0, 0.12], [0, -80]);
 
-  // Event-driven video scrubbing — only when video is loaded AND user scrolls
+  // Throttled video seeking — at most once per SEEK_THROTTLE ms
+  // No rAF loop, no polling, zero CPU when idle
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
     const video = videoRef.current;
     if (!video || !videoReady) return;
 
+    const now = Date.now();
     const targetTime = latest * VIDEO_DURATION;
-    const throttle = isMobile ? 0.12 : 0.06;
-    if (Math.abs(lastTimeRef.current - targetTime) > throttle) {
+    const threshold = isMobile ? 0.12 : 0.06;
+    const timeDiff = Math.abs(lastTimeRef.current - targetTime);
+    if (timeDiff < threshold) return;
+
+    // Throttle: only seek every SEEK_THROTTLE ms
+    if (now - lastSeekTimeRef.current >= SEEK_THROTTLE) {
       video.currentTime = targetTime;
       lastTimeRef.current = targetTime;
+      lastSeekTimeRef.current = now;
     }
   });
 
-  // Branding fade in at the very end
-  const brandingOpacity = useTransform(scrollYProgress, [0.75, 0.82], [0, 1]);
-  const brandingScale = useTransform(scrollYProgress, [0.75, 1], [0.9, 1.05]);
-  const brandingY = useTransform(scrollYProgress, [0.75, 0.82], [40, 0]);
+  // Branding fade in at the end
+  const brandingOpacity = useTransform(scrollYProgress, [0.7, 0.8], [0, 1]);
+  const brandingScale = useTransform(scrollYProgress, [0.7, 1], [0.9, 1.05]);
+  const brandingY = useTransform(scrollYProgress, [0.7, 0.8], [40, 0]);
 
   // 2. MOUSE INTERACTION & PARALLAX (desktop only)
   const mouseX = useMotionValue(0);
@@ -89,8 +97,7 @@ export default function HeroOceanScene() {
   return (
     <section
       ref={containerRef}
-      // Reduced from 800vh to 200vh — 4x less scroll DOM, way less lag
-      className="relative h-[200vh] w-full bg-black"
+      className="relative h-[400vh] w-full bg-black"
       onMouseMove={handleMouseMove}
     >
       <div className="sticky top-0 w-full h-screen overflow-hidden flex flex-col justify-center bg-black">
@@ -148,7 +155,6 @@ export default function HeroOceanScene() {
           </p>
         </motion.div>
 
-        {/* Subtle edge glow top */}
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent z-30" />
 
         {/* Premium Typography Container */}
