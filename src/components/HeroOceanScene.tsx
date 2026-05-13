@@ -1,14 +1,19 @@
 'use client';
 
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { motion, useScroll, useTransform, useSpring, useMotionValueEvent, useMotionValue } from 'framer-motion';
 
-const VIDEO_DURATION = 24.0; // Exact length of hero_optimized.mp4
+const VIDEO_DURATION = 24.0;
 
 export default function HeroOceanScene() {
   const containerRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    setIsMobile(window.matchMedia('(pointer: coarse)').matches);
+  }, []);
+
   // 1. SCROLL PHYSICS
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -32,13 +37,20 @@ export default function HeroOceanScene() {
 
     let frameId: number;
     let lastTime = -1;
-    // Throttle threshold: skip frames if they're within ~2px scroll worth of time
-    const THROTTLE_THRESHOLD = 0.05;
+    let isVisible = true;
+
+    // Throttle: higher threshold on mobile for less GPU work
+    const THROTTLE = isMobile ? 0.1 : 0.05;
+
+    const handleVisibility = () => {
+      isVisible = document.visibilityState === 'visible';
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
 
     const renderLoop = () => {
-      if (video.readyState >= 2) {
+      if (isVisible && video.readyState >= 2) {
         const targetTime = progressRef.current * VIDEO_DURATION;
-        if (Math.abs(lastTime - targetTime) > THROTTLE_THRESHOLD) {
+        if (Math.abs(lastTime - targetTime) > THROTTLE) {
           video.currentTime = targetTime;
           lastTime = targetTime;
         }
@@ -47,27 +59,28 @@ export default function HeroOceanScene() {
     };
 
     frameId = requestAnimationFrame(renderLoop);
-    return () => cancelAnimationFrame(frameId);
-  }, []);
+    return () => {
+      cancelAnimationFrame(frameId);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
+  }, [isMobile]);
 
   // Branding fade in at the very end
   const brandingOpacity = useTransform(scrollYProgress, [0.8, 0.85], [0, 1]);
   const brandingScale = useTransform(scrollYProgress, [0.8, 1], [0.9, 1.05]);
   const brandingY = useTransform(scrollYProgress, [0.8, 0.85], [40, 0]);
 
-  // 2. MOUSE INTERACTION & PARALLAX
+  // 2. MOUSE INTERACTION & PARALLAX (desktop only)
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const cursorX = useMotionValue(typeof window !== 'undefined' ? window.innerWidth / 2 : 0);
   const cursorY = useMotionValue(typeof window !== 'undefined' ? window.innerHeight / 2 : 0);
 
-  const handleMouseMove = (e: React.MouseEvent) => {
+  const handleMouseMove = isMobile ? undefined : (e: React.MouseEvent) => {
     const { clientX, clientY } = e;
     const { innerWidth, innerHeight } = window;
-    
     mouseX.set((clientX / innerWidth - 0.5) * 40);
     mouseY.set((clientY / innerHeight - 0.5) * 40);
-    
     cursorX.set(clientX);
     cursorY.set(clientY);
   };
@@ -88,30 +101,32 @@ export default function HeroOceanScene() {
   };
 
   return (
-    <section 
-      ref={containerRef} 
+    <section
+      ref={containerRef}
       className="relative h-[800vh] w-full bg-black"
       onMouseMove={handleMouseMove}
     >
       <div className="sticky top-0 w-full h-screen overflow-hidden flex flex-col justify-center bg-black">
 
-        {/* Ambient Cursor Ripple */}
-        <motion.div
-          className="fixed w-[40rem] h-[40rem] rounded-full pointer-events-none z-30"
-          style={{
-            x: smoothCursorX,
-            y: smoothCursorY,
-            translateX: '-50%',
-            translateY: '-50%',
-            background: 'radial-gradient(circle, rgba(0,255,200,0.2) 0%, rgba(0,255,200,0) 60%)',
-            willChange: 'transform',
-          }}
-        />
+        {/* Ambient Cursor Ripple (desktop only) */}
+        {!isMobile && (
+          <motion.div
+            className="fixed w-[40rem] h-[40rem] rounded-full pointer-events-none z-30"
+            style={{
+              x: smoothCursorX,
+              y: smoothCursorY,
+              translateX: '-50%',
+              translateY: '-50%',
+              background: 'radial-gradient(circle, rgba(0,255,200,0.2) 0%, rgba(0,255,200,0) 60%)',
+              willChange: 'transform',
+            }}
+          />
+        )}
 
-        {/* Video Engine Renderer (Zero CPU overhead, Zero network choke) */}
+        {/* Video Engine Renderer */}
         <motion.div
           className="absolute inset-0 z-0 flex items-center justify-center will-change-transform"
-          style={{ x: smoothMouseX, y: smoothMouseY }}
+          style={!isMobile ? { x: smoothMouseX, y: smoothMouseY } : {}}
         >
           <video
             ref={videoRef}
@@ -122,7 +137,7 @@ export default function HeroOceanScene() {
           >
             <source src="/videos/hero_optimized.mp4" type="video/mp4" />
           </video>
-          
+
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,10,5,0.7)_100%)] pointer-events-none" />
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-[#020a06]/90 pointer-events-none" />
         </motion.div>
@@ -168,7 +183,7 @@ export default function HeroOceanScene() {
               </h1>
             </motion.div>
 
-            <motion.p 
+            <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1], delay: 0.6 }}
@@ -200,7 +215,7 @@ export default function HeroOceanScene() {
         </motion.div>
 
         {/* Gentle Scroll Indicator */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 2, delay: 2.5 }}
@@ -210,14 +225,14 @@ export default function HeroOceanScene() {
         >
           <span className="text-white/40 text-[10px] font-medium tracking-[0.3em] uppercase mb-4 group-hover:text-emerald-400 transition-colors">Descend</span>
           <div className="w-px h-16 bg-white/20 relative overflow-hidden">
-            <motion.div 
+            <motion.div
               className="w-full h-1/2 bg-emerald-400 absolute top-0 left-0"
               animate={{ y: ["-100%", "200%"] }}
               transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
             />
           </div>
         </motion.div>
-        
+
       </div>
     </section>
   );

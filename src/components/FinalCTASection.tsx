@@ -196,12 +196,23 @@ export default function FinalCTASection() {
               <span className="text-lg font-medium tracking-[0.2em] uppercase">Websites</span>
             </div>
             
-            <div className="flex flex-col md:flex-row gap-6 md:gap-12 items-center text-white/70 text-sm font-light mb-4">
+            <div className="flex flex-col md:flex-row gap-4 md:gap-8 items-center text-white/70 text-sm font-light mb-4">
               <a href="tel:0753203477" className="flex items-center gap-2 hover:text-yellow-500 transition-colors">
                 <span>📞</span> 075 320 3477
               </a>
-              <a href="https://mcfwebsites.lovable.app" target="_blank" rel="noreferrer" className="flex items-center gap-2 hover:text-yellow-500 transition-colors">
-                <span>🌐</span> mcfwebsites.lovable.app
+              <a href="tel:0781064098" className="flex items-center gap-2 hover:text-yellow-500 transition-colors">
+                <span>📞</span> 078 106 4098
+              </a>
+              <a href="tel:0615442591" className="flex items-center gap-2 hover:text-yellow-500 transition-colors">
+                <span>📞</span> 061 544 2591
+              </a>
+            </div>
+            <div className="flex flex-col md:flex-row gap-4 md:gap-8 items-center text-white/70 text-sm font-light">
+              <a href="mailto:feletchristopher@gmail.com" className="flex items-center gap-2 hover:text-yellow-500 transition-colors">
+                <span>✉</span> feletchristopher@gmail.com
+              </a>
+              <a href="mailto:kadem.tech@gmail.com" className="flex items-center gap-2 hover:text-yellow-500 transition-colors">
+                <span>✉</span> kadem.tech@gmail.com
               </a>
             </div>
 

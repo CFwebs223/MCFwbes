@@ -7,20 +7,20 @@ import Ambient3DBackground from './Ambient3DBackground';
 const tiers = [
   {
     name: 'Digital Menus',
-    price: 'R35,000',
+    price: 'R2,000',
     description: 'Perfect for restaurants & cafes.',
     detail: 'Full digital menu with online ordering, QR codes, and real-time updates.',
   },
   {
     name: 'Classic Sites',
-    price: 'R90,000',
+    price: 'R5,000',
     description: 'Professional presence for businesses.',
     detail: 'Multi-page website with CMS, contact forms, analytics, and SEO optimization.',
     popular: true
   },
   {
     name: '3D Scroll-Based',
-    price: 'R145,000+',
+    price: 'R8,000',
     description: 'Cinematic experiences.',
     detail: 'Custom 3D scroll-triggered animations, WebGL integration, and premium interactions.',
   }

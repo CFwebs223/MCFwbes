@@ -7,7 +7,7 @@ export default function ProcessSection() {
   const containerRef = useRef<HTMLElement>(null);
   const scrollVideoRef = useRef<HTMLVideoElement>(null);
   const [timecode, setTimecode] = useState("00:00:00:00");
-  
+
   const { scrollY } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"]
@@ -20,12 +20,16 @@ export default function ProcessSection() {
     stiffness: 400
   });
 
+  // Idle base speed
+  const baseSpeedRef = useRef(1.0);
+
   useMotionValueEvent(smoothVelocity, "change", (latestVelocity) => {
     if (scrollVideoRef.current) {
-      // Base speed is 1.0. We add up to 2.0 based on scroll speed.
       const speed = Math.abs(latestVelocity);
-      const targetRate = 1.0 + (speed / 1000) * 1.5; 
-      scrollVideoRef.current.playbackRate = Math.min(targetRate, 3.0); // Cap at 3x speed
+      // Speed up when scrolling, return to base when idle
+      const targetRate = 1.0 + (speed / 1000) * 1.5;
+      scrollVideoRef.current.playbackRate = Math.min(targetRate, 3.0);
+      baseSpeedRef.current = Math.min(targetRate, 3.0);
     }
   });
 
@@ -33,31 +37,47 @@ export default function ProcessSection() {
     const video = scrollVideoRef.current;
     if (!video) return;
 
-    const isMobile = window.matchMedia('(pointer: coarse)').matches;
+    // Ensure video is always playing (idle animation)
+    const playVideo = () => {
+      video.play().catch(() => {});
+    };
 
-    video.play().catch(() => {});
+    playVideo();
+
+    // Resume playback if it pauses (handles autoplay policy)
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        playVideo();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
 
     // Fake timecode generator for the HUD
     const interval = setInterval(() => {
-      const ms = Math.floor(Math.random() * 99).toString().padStart(2, '0');
-      const s = new Date().getSeconds().toString().padStart(2, '0');
-      const m = new Date().getMinutes().toString().padStart(2, '0');
+      const now = new Date();
+      const ms = Math.floor(performance.now() % 99).toString().padStart(2, '0');
+      const s = now.getSeconds().toString().padStart(2, '0');
+      const m = now.getMinutes().toString().padStart(2, '0');
       setTimecode(`01:${m}:${s}:${ms}`);
     }, 50);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
   }, []);
 
   return (
     <section id="process" ref={containerRef} className="relative h-[300vh] w-full bg-black">
       <div className="sticky top-0 w-full h-screen overflow-hidden">
-        
+
         {/* Dynamic Playback Rate Video */}
         <video
           ref={scrollVideoRef}
           loop
           muted
           playsInline
+          autoPlay
           className="absolute inset-0 w-full h-full object-cover z-0"
         >
           <source src="/videos/0510(9)_optimized.mp4" type="video/mp4" />
@@ -65,10 +85,10 @@ export default function ProcessSection() {
 
         {/* Premium Cinematic HUD Decorations */}
         <div className="absolute inset-0 pointer-events-none z-10 flex flex-col justify-between p-8 md:p-12">
-          
+
           {/* Subtle Scanlines overlay */}
           <div className="absolute inset-0 opacity-[0.03] mix-blend-overlay bg-[linear-gradient(transparent_50%,rgba(0,0,0,1)_50%)] bg-[length:100%_4px]" />
-          
+
           {/* Heavy Vignette to frame the video */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_30%,rgba(0,0,0,0.8)_100%)]" />
 
@@ -91,7 +111,7 @@ export default function ProcessSection() {
              <div className="absolute -top-[1px] -right-[1px] w-8 h-8 border-t border-r border-cyan-400/50" />
              <div className="absolute -bottom-[1px] -left-[1px] w-8 h-8 border-b border-l border-cyan-400/50" />
              <div className="absolute -bottom-[1px] -right-[1px] w-8 h-8 border-b border-r border-cyan-400/50" />
-             
+
              {/* Subtle Center Crosshair */}
              <div className="w-12 h-px bg-cyan-400/30 absolute" />
              <div className="w-px h-12 bg-cyan-400/30 absolute" />
