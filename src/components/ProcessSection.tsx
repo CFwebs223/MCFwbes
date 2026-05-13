@@ -59,14 +59,13 @@ export default function ProcessSection() {
     };
     document.addEventListener('visibilitychange', handleVisibility);
 
-    // Timecode HUD
+    // Timecode HUD — updates at 10fps, no need for 20fps
     const interval = setInterval(() => {
       const now = new Date();
-      const ms = Math.floor(performance.now() % 99).toString().padStart(2, '0');
       const s = now.getSeconds().toString().padStart(2, '0');
       const m = now.getMinutes().toString().padStart(2, '0');
-      setTimecode(`01:${m}:${s}:${ms}`);
-    }, 50);
+      setTimecode(`01:${m}:${s}:${Math.floor(performance.now() % 99).toString().padStart(2, '0')}`);
+    }, 100);
 
     return () => {
       clearInterval(interval);

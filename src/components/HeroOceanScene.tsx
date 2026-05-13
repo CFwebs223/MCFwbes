@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useEffect, useState, useCallback } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { motion, useScroll, useTransform, useSpring, useMotionValueEvent, useMotionValue } from 'framer-motion';
 
 const VIDEO_DURATION = 24.0;
@@ -58,10 +58,10 @@ export default function HeroOceanScene() {
   const smoothMouseX = useSpring(mouseX, { stiffness: 40, damping: 20 });
   const smoothMouseY = useSpring(mouseY, { stiffness: 40, damping: 20 });
 
-  const handleMouseMove = isMobile ? undefined : useCallback((e: React.MouseEvent) => {
+  const handleMouseMove = isMobile ? undefined : (e: React.MouseEvent) => {
     mouseX.set((e.clientX / window.innerWidth - 0.5) * 30);
     mouseY.set((e.clientY / window.innerHeight - 0.5) * 30);
-  }, []);
+  };
 
   const containerVars = {
     hidden: { opacity: 0 },

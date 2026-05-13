@@ -55,7 +55,7 @@ export default function ServicesSection() {
   }, [isInView, shouldReduceMotion]);
 
   return (
-    <section ref={sectionRef} id="services" className="py-32 relative min-h-[120vh] flex items-center z-10 bg-black overflow-hidden">
+    <section ref={sectionRef} id="services" className="py-32 relative min-h-screen flex items-center z-10 bg-black overflow-hidden">
       {/* Background Video */}
       <div className="absolute inset-0 z-0">
         <video

@@ -32,8 +32,8 @@ const originalReviews = [
   },
 ];
 
-// Double the array to have more items in orbit
-const reviews = [...originalReviews, ...originalReviews];
+// Keep at original count for performance — 10 items in 3D transforms is expensive
+const reviews = originalReviews;
 
 export default function OrbitReviews() {
   const isMobile = typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches;

@@ -56,6 +56,10 @@ export default function Ambient3DBackground({
 
     isMobileRef.current = window.matchMedia('(pointer: coarse)').matches;
     const actualCount = isMobileRef.current ? Math.min(particleCount, 12) : particleCount;
+    let isVisible = true;
+
+    const handleVisibility = () => { isVisible = document.visibilityState === 'visible'; };
+    document.addEventListener('visibilitychange', handleVisibility);
 
     const resize = () => {
       const dpr = window.devicePixelRatio || 1;
@@ -65,7 +69,6 @@ export default function Ambient3DBackground({
       canvas.style.height = `${window.innerHeight}px`;
       ctx.scale(dpr, dpr);
       initParticles(window.innerWidth, window.innerHeight);
-      // Reduce particle count on mobile
       if (isMobileRef.current) {
         particlesRef.current = particlesRef.current.slice(0, actualCount);
       }
@@ -84,6 +87,7 @@ export default function Ambient3DBackground({
     }
 
     const animate = () => {
+      if (!isVisible) { frameRef.current = requestAnimationFrame(animate); return; }
       const w = window.innerWidth;
       const h = window.innerHeight;
       ctx.clearRect(0, 0, w, h);
@@ -149,6 +153,7 @@ export default function Ambient3DBackground({
       cancelAnimationFrame(frameRef.current);
       window.removeEventListener('resize', resize);
       window.removeEventListener('mousemove', handleMouse);
+      document.removeEventListener('visibilitychange', handleVisibility);
     };
   }, [initParticles, particleCount]);
 
