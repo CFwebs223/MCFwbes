@@ -34,3 +34,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Ruflo runtime
+ruvector.db
+.claude-flow/
+.swarm/
+.mcp.json

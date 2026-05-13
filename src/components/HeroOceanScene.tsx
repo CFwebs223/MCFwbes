@@ -1,26 +1,18 @@
 'use client';
 
 import { useRef, useEffect, useState } from 'react';
-import { motion, useScroll, useTransform, useSpring, useMotionValueEvent, useMotionValue } from 'framer-motion';
-
-const VIDEO_DURATION = 24.0;
-// Budget: max 5 video seeks per second (200ms between seeks)
-// This keeps each seek within 16ms frame budget at 60fps
-const SEEK_INTERVAL = 200;
-// Minimum frame advance to bother seeking (0.1s = ~3-4 frames)
-const FRAME_THRESHOLD = 0.1;
+import { motion, useScroll, useTransform, useSpring, useMotionValue } from 'framer-motion';
+import FrameSequence from './FrameSequence';
 
 export default function HeroOceanScene() {
   const containerRef = useRef<HTMLElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
   const [isMobile, setIsMobile] = useState(false);
-  const lastSeekRef = useRef({ time: -1, at: 0 });
 
   useEffect(() => {
     setIsMobile(window.matchMedia('(pointer: coarse)').matches);
   }, []);
 
-  // Scroll physics — 200vh: just enough scroll room for the effect
+  // Scroll physics — 200vh: enough room for the 24s scrub
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"]
@@ -35,23 +27,6 @@ export default function HeroOceanScene() {
   const brandingScale = useTransform(scrollYProgress, [0.65, 0.9], [0.92, 1.02]);
   const brandingY = useTransform(scrollYProgress, [0.65, 0.8], [30, 0]);
 
-  // Frame-budgeted video seeking: max 5 seeks/sec
-  // Every seek must complete within the 16ms frame budget
-  useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    const video = videoRef.current;
-    if (!video || video.readyState < 3) return;
-
-    const now = performance.now();
-    const targetTime = latest * VIDEO_DURATION;
-    const diff = Math.abs(lastSeekRef.current.time - targetTime);
-
-    // Skip if frame barely changed OR we're still within the budget window
-    if (diff < FRAME_THRESHOLD || now - lastSeekRef.current.at < SEEK_INTERVAL) return;
-
-    video.currentTime = targetTime;
-    lastSeekRef.current = { time: targetTime, at: now };
-  });
-
   // Mouse parallax — desktop only, transform only
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -62,6 +37,22 @@ export default function HeroOceanScene() {
     mouseX.set((e.clientX / window.innerWidth - 0.5) * 30);
     mouseY.set((e.clientY / window.innerHeight - 0.5) * 30);
   };
+
+  // Frame-accurate progress — only updates state when the displayed frame changes
+  // With 120 frames across 200vh, that's max 120 state updates total
+  const TOTAL_FRAMES = 120;
+  const [frameIndex, setFrameIndex] = useState(0);
+  const lastFrameRef = useRef(-1);
+  useEffect(() => {
+    const unsubscribe = scrollYProgress.on('change', (v) => {
+      const idx = Math.min(Math.floor(v * TOTAL_FRAMES), TOTAL_FRAMES - 1);
+      if (idx !== lastFrameRef.current) {
+        lastFrameRef.current = idx;
+        setFrameIndex(idx);
+      }
+    });
+    return () => unsubscribe();
+  }, [scrollYProgress]);
 
   const containerVars = {
     hidden: { opacity: 0 },
@@ -81,20 +72,17 @@ export default function HeroOceanScene() {
     >
       <div className="sticky top-0 w-full h-screen overflow-hidden flex flex-col justify-center bg-black">
 
-        {/* Video — scroll-sought at max 5fps, no rAF, no polling */}
+        {/* Frame sequence — no video, no seeking, no codec decode */}
         <motion.div
           className="absolute inset-0 z-0"
           style={!isMobile ? { x: smoothMouseX, y: smoothMouseY } : {}}
         >
-          <video
-            ref={videoRef}
-            muted
-            playsInline
-            preload="auto"
-            className="absolute inset-0 w-full h-full object-cover object-top brightness-[0.85]"
-          >
-            <source src="/videos/hero_optimized.mp4" type="video/mp4" />
-          </video>
+          <FrameSequence
+            path="/frames/hero/frame_"
+            totalFrames={TOTAL_FRAMES}
+            progress={frameIndex / TOTAL_FRAMES}
+            className="brightness-[0.85]"
+          />
 
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,10,5,0.7)_100%)] pointer-events-none" />
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-[#020a06]/90 pointer-events-none" />
