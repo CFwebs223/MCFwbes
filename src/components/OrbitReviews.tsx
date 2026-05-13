@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef } from 'react';
-import { motion, useMotionValue, useSpring, useAnimationFrame } from 'framer-motion';
+import { motion, useMotionValue, useSpring, useAnimationFrame, useInView } from 'framer-motion';
 import { Star } from 'lucide-react';
 
 const originalReviews = [
@@ -36,15 +36,17 @@ const originalReviews = [
 const reviews = originalReviews;
 
 export default function OrbitReviews() {
+  const sectionRef = useRef<HTMLElement>(null);
   const isMobile = typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches;
-  const radius = isMobile ? 400 : 600; // Smaller radius on mobile for performance
-  
+  const isInView = useInView(sectionRef, { margin: "300px 0px" });
+  const radius = isMobile ? 400 : 600;
+
   const rotation = useMotionValue(0);
   const isDragging = useRef(false);
 
   useAnimationFrame((time, delta) => {
-    if (!isDragging.current) {
-      // Auto-spin logic: 8 degrees per second
+    // Pause animation when not in view — saves CPU/GPU
+    if (!isDragging.current && isInView) {
       rotation.set(rotation.get() - (delta / 1000) * 8);
     }
   });
@@ -52,7 +54,7 @@ export default function OrbitReviews() {
   const smoothRotation = useSpring(rotation, { stiffness: 300, damping: 40 });
 
   return (
-    <section className="py-32 md:py-48 relative z-10 bg-black overflow-hidden flex flex-col items-center justify-center min-h-screen">
+    <section ref={sectionRef} className="py-32 md:py-48 relative z-10 bg-black overflow-hidden flex flex-col items-center justify-center min-h-screen">
       <div className="container mx-auto px-6 md:px-12 text-center relative z-20 mb-32">
         <motion.div
           initial={{ opacity: 0, y: 50 }}

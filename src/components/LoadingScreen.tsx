@@ -7,8 +7,28 @@ export default function LoadingScreen() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 800);
-    return () => clearTimeout(timer);
+    let cancelled = false;
+
+    // Preload hero frames in the background during the loading screen
+    const preloadHeroFrames = () => {
+      for (let i = 0; i < 30; i++) {
+        const num = String(i + 1).padStart(4, '0');
+        const img = new Image();
+        img.src = `/frames/hero/frame_${num}.jpg`;
+      }
+    };
+    preloadHeroFrames();
+
+    // Minimum 1.2s loading screen to ensure frames have time to start loading
+    // and prevent layout flash on fast connections
+    const timer = setTimeout(() => {
+      if (!cancelled) setIsLoading(false);
+    }, 1200);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
   }, []);
 
   return (
@@ -17,7 +37,7 @@ export default function LoadingScreen() {
         <motion.div
           className="fixed inset-0 z-[200] bg-black flex flex-col items-center justify-center"
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         >
           {/* Ripple rings */}
           {[0, 1, 2].map((i) => (
@@ -53,7 +73,7 @@ export default function LoadingScreen() {
               className="h-full bg-gradient-to-r from-cyan-500 to-white"
               initial={{ width: '0%' }}
               animate={{ width: '100%' }}
-              transition={{ duration: 2.4, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 2.0, ease: [0.16, 1, 0.3, 1] }}
             />
           </motion.div>
         </motion.div>

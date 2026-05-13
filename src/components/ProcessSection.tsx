@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useEffect, useState } from 'react';
-import { useScroll, useVelocity, useSpring, useMotionValueEvent } from 'framer-motion';
+import { useScroll, useMotionValueEvent } from 'framer-motion';
 import FrameSequence from './FrameSequence';
 
 const TOTAL_FRAMES = 40;
@@ -10,17 +10,6 @@ export default function ProcessSection() {
   const containerRef = useRef<HTMLElement>(null);
   const [timecode, setTimecode] = useState("00:00:00:00");
   const lastFrameRef = useRef(-1);
-
-  // Use GLOBAL scroll so velocity tracks across entire page
-  const { scrollY } = useScroll();
-
-  const scrollVelocity = useVelocity(scrollY);
-  const smoothVelocity = useSpring(scrollVelocity, {
-    damping: 50,
-    stiffness: 400
-  });
-
-  const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Frame-accurate scroll progress — only updates when frame changes
   const { scrollYProgress } = useScroll({
@@ -37,14 +26,6 @@ export default function ProcessSection() {
     }
   });
 
-  // Scroll velocity for playback rate display
-  useMotionValueEvent(smoothVelocity, "change", (latestVelocity) => {
-    if (Math.abs(latestVelocity) > 5) {
-      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
-      scrollTimeoutRef.current = setTimeout(() => {}, 300);
-    }
-  });
-
   useEffect(() => {
     const interval = setInterval(() => {
       const now = new Date();
@@ -53,10 +34,7 @@ export default function ProcessSection() {
       setTimecode(`01:${m}:${s}:${Math.floor(performance.now() % 99).toString().padStart(2, '0')}`);
     }, 100);
 
-    return () => {
-      clearInterval(interval);
-      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
-    };
+    return () => { clearInterval(interval); };
   }, []);
 
   return (

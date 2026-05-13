@@ -1,25 +1,25 @@
 'use client';
 
-import { useRef, useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 
 interface FrameSequenceProps {
-  /** Path prefix like "/frames/hero/frame_" */
   path: string;
-  /** Total number of frames */
   totalFrames: number;
-  /** Current scroll progress 0-1 */
   progress: number;
-  /** File extension (default: jpg) */
   ext?: string;
-  /** Padding for frame number (default: 4) */
   pad?: number;
   className?: string;
+  onLoaded?: () => void;
 }
 
+let globalFrameCache = new Map<string, boolean>();
+
 /**
- * FrameSequence — renders sequential JPEG/PNG frames based on scroll progress.
- * No video seeking, no codec decode, no rAF.
- * Frame images are cached by the browser after first load.
+ * FrameSequence — preloaded JPEG frame scrubber.
+ *
+ * On mount, ALL frames are preloaded via Image() constructor.
+ * The browser caches them automatically. During scroll, <img src>
+ * swaps are served from cache — zero network cost, minimal decode.
  */
 export default function FrameSequence({
   path,
@@ -28,55 +28,75 @@ export default function FrameSequence({
   ext = 'jpg',
   pad = 4,
   className = '',
+  onLoaded,
 }: FrameSequenceProps) {
-  const [loaded, setLoaded] = useState(false);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [ready, setReady] = useState(globalFrameCache.has(`${path}1`));
 
-  // Clamp progress to [0, 1]
   const clamped = Math.max(0, Math.min(1, progress));
-  // Compute frame index (last frame stays on the final frame)
-  const frameIndex = Math.min(
-    Math.floor(clamped * totalFrames),
-    totalFrames - 1
-  );
+  const frameIndex = Math.min(Math.floor(clamped * totalFrames), totalFrames - 1);
   const frameNum = String(frameIndex + 1).padStart(pad, '0');
   const src = `${path}${frameNum}.${ext}`;
 
-  // Preload the next few frames for smoother scrubbing
   useEffect(() => {
-    const preloadCount = 3;
-    for (let i = 1; i <= preloadCount; i++) {
-      const nextIndex = frameIndex + i;
-      if (nextIndex < totalFrames) {
-        const nextNum = String(nextIndex + 1).padStart(pad, '0');
-        const img = new Image();
-        img.src = `${path}${nextNum}.${ext}`;
-      }
-    }
-  }, [frameIndex, path, totalFrames, ext, pad]);
+    if (ready) return;
 
-  // Preload first frame on mount
-  useEffect(() => {
-    const img = new Image();
-    img.onload = () => setLoaded(true);
-    img.src = src;
-  }, []);
+    let cancelled = false;
+    let firstLoaded = false;
+
+    for (let i = 0; i < totalFrames; i++) {
+      const num = String(i + 1).padStart(pad, '0');
+      const frameSrc = `${path}${num}.${ext}`;
+
+      if (globalFrameCache.has(frameSrc)) continue;
+
+      const img = new Image();
+      img.onload = () => {
+        if (cancelled) return;
+        globalFrameCache.set(frameSrc, true);
+        if (!firstLoaded) {
+          firstLoaded = true;
+          setReady(true);
+          onLoaded?.();
+        }
+      };
+      img.onerror = () => {
+        if (cancelled) return;
+        if (!firstLoaded) {
+          firstLoaded = true;
+          setReady(true);
+          onLoaded?.();
+        }
+      };
+      img.src = frameSrc;
+    }
+
+    // If all already cached, mark ready immediately
+    let allCached = true;
+    for (let i = 0; i < totalFrames; i++) {
+      const num = String(i + 1).padStart(pad, '0');
+      if (!globalFrameCache.has(`${path}${num}.${ext}`)) { allCached = false; break; }
+    }
+    if (allCached && totalFrames > 0) {
+      setReady(true);
+      onLoaded?.();
+    }
+
+    return () => { cancelled = true; };
+  }, [path, totalFrames, ext, pad, ready, onLoaded]);
 
   return (
     <div className={`absolute inset-0 ${className}`}>
-      {!loaded && (
-        <div className="absolute inset-0 bg-black" />
-      )}
+      {!ready && <div className="absolute inset-0 bg-black" />}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={src}
         alt=""
-        className={`w-full h-full object-cover object-top transition-opacity duration-75 ${
-          loaded ? 'opacity-100' : 'opacity-0'
-        }`}
+        className={`w-full h-full object-cover object-top ${ready ? 'opacity-100' : 'opacity-0'}`}
         draggable={false}
-        loading="eager"
+        fetchPriority={frameIndex < 5 ? 'high' : 'auto'}
       />
     </div>
   );
 }
+
+export { globalFrameCache };
