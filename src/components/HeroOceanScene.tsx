@@ -1,41 +1,67 @@
 'use client';
 
-import { useRef, useEffect, useState } from 'react';
-import { motion, useScroll, useTransform, useSpring, useMotionValue } from 'framer-motion';
+import { useRef, useEffect, useState, useCallback } from 'react';
+import { motion, useScroll, useTransform, useSpring, useMotionValueEvent, useMotionValue } from 'framer-motion';
+
+const VIDEO_DURATION = 24.0;
+// Budget: max 5 video seeks per second (200ms between seeks)
+// This keeps each seek within 16ms frame budget at 60fps
+const SEEK_INTERVAL = 200;
+// Minimum frame advance to bother seeking (0.1s = ~3-4 frames)
+const FRAME_THRESHOLD = 0.1;
 
 export default function HeroOceanScene() {
   const containerRef = useRef<HTMLElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const lastSeekRef = useRef({ time: -1, at: 0 });
 
   useEffect(() => {
     setIsMobile(window.matchMedia('(pointer: coarse)').matches);
   }, []);
 
-  // Compositor-only scroll effects: opacity + transform only
-  // Video plays normally at 1x — NO currentTime seeking, NO rAF, NO decoder overhead
+  // Scroll physics — 200vh: just enough scroll room for the effect
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"]
   });
 
-  const textOpacity = useTransform(scrollYProgress, [0, 0.25], [1, 0]);
-  const textY = useTransform(scrollYProgress, [0, 0.25], [0, -60]);
+  // Text fade — compositor-only
+  const textOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
+  const textY = useTransform(scrollYProgress, [0, 0.15], [0, -60]);
 
-  const brandingOpacity = useTransform(scrollYProgress, [0.6, 0.75], [0, 1]);
-  const brandingScale = useTransform(scrollYProgress, [0.6, 0.85], [0.92, 1.02]);
-  const brandingY = useTransform(scrollYProgress, [0.6, 0.75], [30, 0]);
+  // Branding — compositor-only
+  const brandingOpacity = useTransform(scrollYProgress, [0.65, 0.8], [0, 1]);
+  const brandingScale = useTransform(scrollYProgress, [0.65, 0.9], [0.92, 1.02]);
+  const brandingY = useTransform(scrollYProgress, [0.65, 0.8], [30, 0]);
 
-  // Mouse parallax — only transform, desktop only
+  // Frame-budgeted video seeking: max 5 seeks/sec
+  // Every seek must complete within the 16ms frame budget
+  useMotionValueEvent(scrollYProgress, "change", (latest) => {
+    const video = videoRef.current;
+    if (!video || video.readyState < 3) return;
+
+    const now = performance.now();
+    const targetTime = latest * VIDEO_DURATION;
+    const diff = Math.abs(lastSeekRef.current.time - targetTime);
+
+    // Skip if frame barely changed OR we're still within the budget window
+    if (diff < FRAME_THRESHOLD || now - lastSeekRef.current.at < SEEK_INTERVAL) return;
+
+    video.currentTime = targetTime;
+    lastSeekRef.current = { time: targetTime, at: now };
+  });
+
+  // Mouse parallax — desktop only, transform only
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const smoothMouseX = useSpring(mouseX, { stiffness: 40, damping: 20 });
   const smoothMouseY = useSpring(mouseY, { stiffness: 40, damping: 20 });
 
-  const handleMouseMove = isMobile ? undefined : (e: React.MouseEvent) => {
-    const { clientX, clientY } = e;
-    mouseX.set((clientX / window.innerWidth - 0.5) * 30);
-    mouseY.set((clientY / window.innerHeight - 0.5) * 30);
-  };
+  const handleMouseMove = isMobile ? undefined : useCallback((e: React.MouseEvent) => {
+    mouseX.set((e.clientX / window.innerWidth - 0.5) * 30);
+    mouseY.set((e.clientY / window.innerHeight - 0.5) * 30);
+  }, []);
 
   const containerVars = {
     hidden: { opacity: 0 },
@@ -50,19 +76,18 @@ export default function HeroOceanScene() {
   return (
     <section
       ref={containerRef}
-      className="relative h-[150vh] w-full bg-black"
+      className="relative h-[200vh] w-full bg-black"
       onMouseMove={handleMouseMove}
     >
       <div className="sticky top-0 w-full h-screen overflow-hidden flex flex-col justify-center bg-black">
 
-        {/* Video — normal autoplay, NO seeking, GPU-decoded pipeline */}
+        {/* Video — scroll-sought at max 5fps, no rAF, no polling */}
         <motion.div
           className="absolute inset-0 z-0"
           style={!isMobile ? { x: smoothMouseX, y: smoothMouseY } : {}}
         >
           <video
-            autoPlay
-            loop
+            ref={videoRef}
             muted
             playsInline
             preload="auto"
@@ -75,15 +100,15 @@ export default function HeroOceanScene() {
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-[#020a06]/90 pointer-events-none" />
         </motion.div>
 
-        {/* MCF Websites Branding Overlay */}
+        {/* Branding */}
         <motion.div
           className="absolute inset-0 z-20 flex flex-col items-center justify-center pointer-events-none"
           style={{ opacity: brandingOpacity, scale: brandingScale, y: brandingY }}
         >
           <div className="flex items-center justify-center gap-2 mb-2">
-            <span className="text-6xl md:text-8xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-yellow-200 via-yellow-500 to-yellow-800 drop-shadow-[0_0_30px_rgba(234,179,8,0.4)]">M</span>
-            <span className="text-6xl md:text-8xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-yellow-200 via-yellow-500 to-yellow-800 drop-shadow-[0_0_30px_rgba(234,179,8,0.4)]">C</span>
-            <span className="text-6xl md:text-8xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-yellow-200 via-yellow-500 to-yellow-800 drop-shadow-[0_0_30px_rgba(234,179,8,0.4)]">F</span>
+            {['M','C','F'].map((l) => (
+              <span key={l} className="text-6xl md:text-8xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-yellow-200 via-yellow-500 to-yellow-800 drop-shadow-[0_0_30px_rgba(234,179,8,0.4)]">{l}</span>
+            ))}
           </div>
           <h2 className="text-2xl md:text-4xl font-medium tracking-[0.3em] text-white uppercase mb-4 drop-shadow-xl">Websites</h2>
           <div className="w-16 h-px bg-gradient-to-r from-transparent via-yellow-500 to-transparent mb-4" />
@@ -92,7 +117,7 @@ export default function HeroOceanScene() {
 
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent z-30" />
 
-        {/* Text — compositor-only opacity + transform */}
+        {/* Text — compositor-only */}
         <motion.div
           className="relative z-10 w-full max-w-[1400px] mx-auto px-6 md:px-12 lg:px-20 pt-32 pointer-events-none"
           style={{ opacity: textOpacity, y: textY }}
@@ -104,7 +129,7 @@ export default function HeroOceanScene() {
                   <motion.div variants={lineVars}>Digital Experiences</motion.div>
                 </div>
                 <div className="overflow-hidden pb-4">
-                  <motion.div variants={lineVars} className="italic font-light text-emerald-400 drop-shadow-[0_0_15px_rgba(16,185,129,0.3)]">That Move Effortlessly.</motion.div>
+                  <motion.div variants={lineVars} className="italic font-light text-emerald-400">That Move Effortlessly.</motion.div>
                 </div>
               </h1>
             </motion.div>
@@ -113,7 +138,7 @@ export default function HeroOceanScene() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1], delay: 0.6 }}
-              className="text-lg md:text-xl lg:text-2xl text-white/80 font-light max-w-2xl leading-relaxed mb-10 drop-shadow-md"
+              className="text-lg md:text-xl lg:text-2xl text-white/80 font-light max-w-2xl leading-relaxed mb-10"
             >
               We engineer high-performance websites and immersive WebGL experiences that command attention without breaking a sweat. Built for businesses that refuse to settle for average.
             </motion.p>
@@ -127,15 +152,11 @@ export default function HeroOceanScene() {
               <button
                 onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
                 className="px-8 py-4 rounded-full bg-white text-[#020a06] font-medium hover:bg-emerald-50 transition-colors hover-target text-base shadow-[0_0_20px_rgba(255,255,255,0.2)]"
-              >
-                Start Your Project
-              </button>
+              >Start Your Project</button>
               <button
                 onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
                 className="px-8 py-4 rounded-full glass border border-white/20 text-white font-medium hover:bg-white/10 transition-colors hover-target text-base"
-              >
-                Explore Capabilities
-              </button>
+              >Explore Capabilities</button>
             </motion.div>
           </div>
         </motion.div>
