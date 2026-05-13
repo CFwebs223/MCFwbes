@@ -17,18 +17,18 @@ export default function HeroOceanScene() {
     offset: ["start start", "end end"]
   });
 
-  // Text fades IN at end of scroll (was fading OUT at start)
-  const textOpacity = useTransform(scrollYProgress, [0.65, 0.82], [0, 1]);
-  const textY = useTransform(scrollYProgress, [0.65, 0.82], [60, 0]);
+  // Text fades IN mid-scroll (reaches full opacity by 35% of section)
+  const textOpacity = useTransform(scrollYProgress, [0.15, 0.35], [0, 1]);
+  const textY = useTransform(scrollYProgress, [0.15, 0.35], [40, 0]);
 
-  // Branding — appears even later
-  const brandingOpacity = useTransform(scrollYProgress, [0.75, 0.88], [0, 1]);
-  const brandingScale = useTransform(scrollYProgress, [0.75, 0.95], [0.92, 1.02]);
-  const brandingY = useTransform(scrollYProgress, [0.75, 0.88], [30, 0]);
+  // Branding — appears after text
+  const brandingOpacity = useTransform(scrollYProgress, [0.55, 0.7], [0, 1]);
+  const brandingScale = useTransform(scrollYProgress, [0.55, 0.8], [0.92, 1.02]);
+  const brandingY = useTransform(scrollYProgress, [0.55, 0.7], [30, 0]);
 
   // Scroll button fades out as text appears
-  const buttonOpacity = useTransform(scrollYProgress, [0.5, 0.7], [1, 0]);
-  const buttonScale = useTransform(scrollYProgress, [0.5, 0.7], [1, 0.8]);
+  const buttonOpacity = useTransform(scrollYProgress, [0.1, 0.25], [1, 0]);
+  const buttonScale = useTransform(scrollYProgress, [0.1, 0.25], [1, 0.8]);
 
   // Mouse parallax
   const mouseX = useMotionValue(0);
@@ -55,16 +55,6 @@ export default function HeroOceanScene() {
     return () => unsubscribe();
   }, [scrollYProgress]);
 
-  const containerVars = {
-    hidden: { opacity: 0 },
-    show: { opacity: 1, transition: { staggerChildren: 0.2, delayChildren: 0.1 } }
-  };
-
-  const lineVars = {
-    hidden: { opacity: 0, y: 40 },
-    show: { opacity: 1, y: 0, transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] } }
-  };
-
   return (
     <section
       ref={containerRef}
@@ -86,6 +76,8 @@ export default function HeroOceanScene() {
           />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,10,5,0.7)_100%)] pointer-events-none" />
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-[#020a06]/90 pointer-events-none" />
+          {/* Cover watermark */}
+          <div className="absolute bottom-0 right-0 w-32 h-12 bg-gradient-to-l from-black to-transparent pointer-events-none z-10" />
         </motion.div>
 
         {/* Branding — appears at end */}
@@ -105,38 +97,22 @@ export default function HeroOceanScene() {
 
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent z-30" />
 
-        {/* Text — hidden initially, fades in at end of scroll */}
+        {/* Text — hidden initially, parent opacity controls visibility via scroll */}
         <motion.div
           className="relative z-10 w-full max-w-[1400px] mx-auto px-6 md:px-12 lg:px-20 pt-32 pointer-events-none"
           style={{ opacity: textOpacity, y: textY }}
         >
           <div className="max-w-4xl pointer-events-auto">
-            <motion.div variants={containerVars} initial="hidden" animate="show">
-              <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif tracking-tight mb-8 text-white drop-shadow-2xl leading-[1.1]">
-                <div className="overflow-hidden pb-2">
-                  <motion.div variants={lineVars}>Digital Experiences</motion.div>
-                </div>
-                <div className="overflow-hidden pb-4">
-                  <motion.div variants={lineVars} className="italic font-light text-emerald-400">That Move Effortlessly.</motion.div>
-                </div>
-              </h1>
-            </motion.div>
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif tracking-tight mb-8 text-white drop-shadow-2xl leading-[1.1]">
+              Digital Experiences<br />
+              <span className="italic font-light text-emerald-400">That Move Effortlessly.</span>
+            </h1>
 
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1], delay: 0.6 }}
-              className="text-lg md:text-xl lg:text-2xl text-white/80 font-light max-w-2xl leading-relaxed mb-10"
-            >
+            <p className="text-lg md:text-xl lg:text-2xl text-white/80 font-light max-w-2xl leading-relaxed mb-10">
               We engineer high-performance websites and immersive WebGL experiences that command attention without breaking a sweat. Built for businesses that refuse to settle for average.
-            </motion.p>
+            </p>
 
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 2, ease: "easeOut", delay: 1.2 }}
-              className="flex flex-col sm:flex-row gap-4"
-            >
+            <div className="flex flex-col sm:flex-row gap-4">
               <button
                 onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
                 className="px-8 py-4 rounded-full bg-white text-[#020a06] font-medium hover:bg-emerald-50 transition-colors hover-target text-base shadow-[0_0_20px_rgba(255,255,255,0.2)]"
@@ -145,7 +121,7 @@ export default function HeroOceanScene() {
                 onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
                 className="px-8 py-4 rounded-full glass border border-white/20 text-white font-medium hover:bg-white/10 transition-colors hover-target text-base"
               >Explore Capabilities</button>
-            </motion.div>
+            </div>
           </div>
         </motion.div>
 

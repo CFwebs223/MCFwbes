@@ -62,23 +62,23 @@ export default function ServicesSection() {
     <section ref={sectionRef} id="services" className="relative h-[200vh] w-full bg-black">
       <div className="sticky top-0 w-full min-h-screen flex items-center z-10 overflow-hidden">
 
-        {/* Frame sequence background — shows through 80% of the panel */}
+        {/* Frame sequence background */}
         <FrameSequence
           path="/frames/waterfall/frame_"
           totalFrames={TOTAL_FRAMES}
           progress={frameIndex / TOTAL_FRAMES}
           className="saturate-[1.3] brightness-[1.1]"
         />
+        {/* Cover watermark */}
+        <div className="absolute bottom-0 right-0 w-32 h-12 bg-gradient-to-l from-black to-transparent pointer-events-none z-10" />
 
-        {/* Translucent black side panel — 35% width on desktop, full on mobile */}
+        {/* Fully black side panel — 38% width on desktop, full on mobile */}
         <div className="absolute left-0 top-0 bottom-0 w-full md:w-[38%] z-20 pointer-events-none">
-          {/* Semi-transparent black backdrop */}
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
-          {/* Left gradient edge */}
-          <div className="absolute right-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-white/10 to-transparent" />
+          <div className="absolute inset-0 bg-black" />
+          <div className="absolute right-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-white/15 to-transparent" />
         </div>
 
-        {/* Content — positioned over the panel */}
+        {/* Content */}
         <div className="container mx-auto px-6 md:px-12 relative z-30 w-full md:w-[38%] mr-auto">
           <div className="max-w-lg">
             <motion.div
@@ -88,8 +88,8 @@ export default function ServicesSection() {
               transition={{ duration: 0.8 }}
               className="mb-12"
             >
-              <h2 className="text-3xl md:text-5xl font-medium mb-5 text-white/95">Digital Capabilities</h2>
-              <div className="w-16 h-0.5 bg-cyan-400/70 shadow-[0_0_12px_rgba(0,255,255,0.4)]" />
+              <h2 className="text-3xl md:text-5xl font-bold mb-5 text-white">Digital Capabilities</h2>
+              <div className="w-16 h-0.5 bg-cyan-400 shadow-[0_0_12px_rgba(0,255,255,0.5)]" />
             </motion.div>
 
             <div className="flex flex-col gap-6">
@@ -102,13 +102,13 @@ export default function ServicesSection() {
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   className="group cursor-default relative"
                 >
-                  <h3 className="text-xl md:text-2xl font-light text-white/90 group-hover:text-white transition-all duration-500 ease-out-expo mb-1.5 flex items-center gap-3">
-                    <span className="opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300">
+                  <h3 className="text-xl md:text-2xl font-bold text-white transition-all duration-500 ease-out-expo mb-1 flex items-center gap-3">
+                    <span className="opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300">
                       {service.icon}
                     </span>
                     {service.title}
                   </h3>
-                  <p className="text-white/60 font-light text-sm md:text-base max-w-sm group-hover:text-white/80 transition-colors duration-300">
+                  <p className="text-white/70 font-medium text-sm md:text-base max-w-sm group-hover:text-white/90 transition-colors duration-300">
                     {service.description}
                   </p>
                 </motion.div>
