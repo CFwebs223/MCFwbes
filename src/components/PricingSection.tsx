@@ -2,23 +2,27 @@
 
 import { useRef, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
+import Ambient3DBackground from './Ambient3DBackground';
 
 const tiers = [
   {
     name: 'Digital Menus',
-    price: '$2,000',
+    price: 'R35,000',
     description: 'Perfect for restaurants & cafes.',
+    detail: 'Full digital menu with online ordering, QR codes, and real-time updates.',
   },
   {
     name: 'Classic Sites',
-    price: '$5,000',
+    price: 'R90,000',
     description: 'Professional presence for businesses.',
+    detail: 'Multi-page website with CMS, contact forms, analytics, and SEO optimization.',
     popular: true
   },
   {
     name: '3D Scroll-Based',
-    price: '$8,000+',
+    price: 'R145,000+',
     description: 'Cinematic experiences.',
+    detail: 'Custom 3D scroll-triggered animations, WebGL integration, and premium interactions.',
   }
 ];
 
@@ -41,8 +45,11 @@ export default function PricingSection() {
 
   return (
     <section ref={sectionRef} id="pricing" className="relative z-10 min-h-screen w-full bg-black overflow-hidden flex items-center py-24">
+      {/* Subtle ambient 3D background */}
+      <Ambient3DBackground particleCount={20} hueRange={[40, 60]} className="opacity-40" />
+
       <div className="max-w-7xl mx-auto w-full px-6 md:px-12 flex flex-col lg:flex-row items-center gap-12 lg:gap-24 relative z-10">
-        
+
         {/* Left Side: Pricing Info */}
         <div className="flex-1 w-full order-2 lg:order-1">
           <motion.div
@@ -66,9 +73,12 @@ export default function PricingSection() {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.6, delay: index * 0.15 }}
-                className={`relative group/premium p-6 md:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between border-l-2 backdrop-blur-md transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${tier.popular ? 'border-yellow-500 bg-yellow-950/10' : 'border-white/20 bg-white/[0.03] hover:bg-white/[0.06]'}`}
+                className={`relative group/premium p-6 md:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between border-l-2 backdrop-blur-md transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden ${tier.popular ? 'border-yellow-500 bg-yellow-950/10' : 'border-white/20 bg-white/[0.03] hover:bg-white/[0.06]'}`}
               >
-                <div className="flex-1 mb-4 sm:mb-0">
+                {/* Ambient hover glow */}
+                <div className={`absolute inset-0 opacity-0 group-hover/premium:opacity-100 transition-opacity duration-700 pointer-events-none ${tier.popular ? 'bg-[radial-gradient(ellipse_at_left,rgba(234,179,8,0.06),transparent_70%)]' : 'bg-[radial-gradient(ellipse_at_left,rgba(255,255,255,0.03),transparent_70%)]'}`} />
+
+                <div className="flex-1 mb-4 sm:mb-0 relative z-10">
                   <div className="flex items-center gap-3 mb-1">
                     <h3 className="text-xl font-medium text-white group-hover/premium:text-white transition-colors duration-300">{tier.name}</h3>
                     {tier.popular && (
@@ -78,13 +88,15 @@ export default function PricingSection() {
                     )}
                   </div>
                   <p className="text-white/50 text-sm font-light max-w-xs group-hover/premium:text-white/70 transition-colors duration-300">{tier.description}</p>
+                  <p className="text-white/30 text-xs font-light max-w-xs mt-1.5 group-hover/premium:text-white/40 transition-colors duration-300">{tier.detail}</p>
                 </div>
 
-                <div className="flex flex-col items-start sm:items-end justify-between sm:ml-6">
-                  <span className="text-3xl font-light text-white mb-3 group-hover/premium:drop-shadow-[0_0_20px_rgba(255,255,255,0.1)] transition-all duration-300">{tier.price}</span>
+                <div className="flex flex-col items-start sm:items-end justify-between sm:ml-6 relative z-10">
+                  <span className="text-3xl font-light text-white mb-2 group-hover/premium:drop-shadow-[0_0_20px_rgba(255,255,255,0.15)] transition-all duration-300">{tier.price}</span>
+                  <span className="text-[10px] text-white/20 font-mono tracking-wider mb-3">one-time project</span>
                   <a
                     href="#contact"
-                    className={`px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] whitespace-nowrap hover-target ${tier.popular ? 'bg-white text-black hover:bg-white/90 shadow-[0_0_20px_rgba(255,255,255,0.1)]' : 'glass border border-white/20 text-white hover:bg-white/10'}`}
+                    className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] whitespace-nowrap hover-target ${tier.popular ? 'bg-white text-black hover:bg-white/90 shadow-[0_0_20px_rgba(255,255,255,0.1)]' : 'glass border border-white/20 text-white hover:bg-white/10'}`}
                     onClick={(e) => {
                       e.preventDefault();
                       document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });

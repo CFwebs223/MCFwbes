@@ -1,17 +1,14 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, useScroll } from 'framer-motion';
 import dynamic from 'next/dynamic';
 
 const SoundToggle = dynamic(() => import('@/components/SoundToggle'), { ssr: false });
 
 function NavLink({ href, label }: { href: string; label: string }) {
-  const linkRef = useRef<HTMLAnchorElement>(null);
-
   return (
     <a
-      ref={linkRef}
       href={href}
       className="relative text-sm font-medium text-white/70 hover:text-white transition-colors duration-300 hover-target group"
       onClick={(e) => {

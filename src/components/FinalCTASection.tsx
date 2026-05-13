@@ -3,8 +3,11 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+type SubmitState = 'idle' | 'sending' | 'sent';
+
 export default function FinalCTASection() {
   const [bubbles, setBubbles] = useState<{ id: number; x: number; y: number }[]>([]);
+  const [submitState, setSubmitState] = useState<SubmitState>('idle');
 
   const spawnBubble = (e: React.KeyboardEvent) => {
     const target = e.target as HTMLElement;
@@ -18,6 +21,13 @@ export default function FinalCTASection() {
     setTimeout(() => {
       setBubbles((prev) => prev.filter((b) => b.id !== newBubble.id));
     }, 2000);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (submitState !== 'idle') return;
+    setSubmitState('sending');
+    setTimeout(() => setSubmitState('sent'), 1500);
   };
 
   return (
@@ -76,7 +86,7 @@ export default function FinalCTASection() {
             <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-emerald-500/3 rounded-full blur-3xl pointer-events-none" />
 
             <h3 className="text-2xl font-medium mb-6 text-white relative z-10">Start Your Project</h3>
-            <form className="space-y-6 relative z-10" onSubmit={(e) => e.preventDefault()}>
+            <form className="space-y-6 relative z-10" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="group/field">
                   <label className="block text-sm font-light text-white/60 mb-2 group-focus-within/field:text-cyan-400/70 transition-colors duration-300">Name</label>
@@ -121,11 +131,55 @@ export default function FinalCTASection() {
 
               <motion.button
                 type="submit"
-                className="w-full py-4 rounded-lg bg-white text-black font-medium transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-white/90 hover-target relative overflow-hidden group/btn"
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.99 }}
+                disabled={submitState !== 'idle'}
+                className="w-full py-4 rounded-lg bg-white text-black font-medium transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-white/90 hover-target relative overflow-hidden group/btn disabled:opacity-70 disabled:cursor-not-allowed"
+                whileHover={submitState === 'idle' ? { scale: 1.01 } : {}}
+                whileTap={submitState === 'idle' ? { scale: 0.99 } : {}}
               >
-                <span className="relative z-10">Send Message</span>
+                <AnimatePresence mode="wait">
+                  {submitState === 'idle' && (
+                    <motion.span
+                      key="idle"
+                      className="relative z-10 flex items-center justify-center gap-2"
+                      exit={{ opacity: 0, y: -5 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      Send Message
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+                      </svg>
+                    </motion.span>
+                  )}
+                  {submitState === 'sending' && (
+                    <motion.span
+                      key="sending"
+                      className="relative z-10 flex items-center justify-center gap-2"
+                      initial={{ opacity: 0, y: 5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                      </svg>
+                      Sending...
+                    </motion.span>
+                  )}
+                  {submitState === 'sent' && (
+                    <motion.span
+                      key="sent"
+                      className="relative z-10 flex items-center justify-center gap-2"
+                      initial={{ opacity: 0, y: 5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      Message Sent
+                    </motion.span>
+                  )}
+                </AnimatePresence>
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]" />
               </motion.button>
             </form>

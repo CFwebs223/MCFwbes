@@ -7,14 +7,16 @@ export default function LenisProvider({ children }: { children: ReactNode }) {
   const lenisRef = useRef<Lenis | null>(null);
 
   useEffect(() => {
+    const isMobile = window.matchMedia('(pointer: coarse)').matches;
+
     const lenis = new Lenis({
-      duration: 1.8,
+      duration: isMobile ? 1.2 : 1.8,
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: 'vertical',
       gestureOrientation: 'vertical',
-      smoothWheel: true,
+      smoothWheel: !isMobile,
       wheelMultiplier: 0.8,
-      touchMultiplier: 1.2,
+      touchMultiplier: isMobile ? 1 : 1.2,
       infinite: false,
     });
 
