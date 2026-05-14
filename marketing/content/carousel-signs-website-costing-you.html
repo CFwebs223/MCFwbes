@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>5 Signs Your Website Is Costing You Customers — Carousel</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#0a0a0a;display:flex;flex-wrap:wrap;gap:24px;padding:40px;justify-content:center;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
+  .slide{width:360px;height:640px;border-radius:28px;overflow:hidden;position:relative;background:#0d0d0d;flex-shrink:0;box-shadow:0 20px 60px rgba(0,0,0,0.5)}
+  .slide-inner{width:100%;height:100%;padding:36px 28px;display:flex;flex-direction:column;position:relative;z-index:2}
+
+  /* Branding bar */
+  .brand{display:flex;align-items:center;gap:8px;margin-bottom:auto}
+  .brand-logo{font-size:18px;font-weight:800;letter-spacing:-0.5px;background:linear-gradient(135deg,#fde047,#eab308,#854d0e);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .brand-tag{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#666}
+
+  /* Typography */
+  .label{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#22d3ee;margin-bottom:12px;font-weight:600}
+  .hook{font-size:26px;font-weight:700;color:#fff;line-height:1.15;margin-bottom:16px}
+  .hook em{font-style:italic;color:#22d3ee}
+  .body-text{font-size:14px;color:#999;line-height:1.6;font-weight:300}
+  .stat{font-size:48px;font-weight:800;color:#22d3ee;line-height:1;margin-bottom:4px}
+  .stat-label{font-size:12px;color:#666;text-transform:uppercase;letter-spacing:1.5px}
+  .divider{width:32px;height:2px;background:linear-gradient(90deg,rgba(34,211,238,0.5),transparent);margin:16px 0}
+
+  /* CTA Slide */
+  .cta-box{border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px;background:rgba(255,255,255,0.03);margin-top:auto}
+  .cta-box .price{font-size:20px;font-weight:700;color:#fff}
+  .cta-box .price-sub{font-size:12px;color:#666;margin-top:4px}
+  .cta-btn{display:inline-block;padding:12px 24px;border-radius:100px;background:#fff;color:#000;font-weight:600;font-size:13px;margin-top:16px;text-decoration:none}
+
+  /* Background effects */
+  .gradient-spot{position:absolute;width:240px;height:240px;border-radius:50%;pointer-events:none;opacity:0.1;filter:blur(60px)}
+  .g1{background:#22d3ee;top:-60px;right:-60px}
+  .g2{background:#22d3ee;bottom:-60px;left:-60px}
+
+  /* Full bleed slides */
+  .slide-full{background:#0d0d0d}
+  .slide-dark{background:#080808}
+
+  .list-item{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px}
+  .list-num{width:24px;height:24px;border-radius:50%;background:rgba(34,211,238,0.15);color:#22d3ee;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+  .list-text{font-size:13px;color:#ccc;line-height:1.5}
+  .list-text strong{color:#fff}
+
+  .hook-sm{font-size:22px;font-weight:700;color:#fff;line-height:1.2;margin-bottom:12px}
+
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+  .grid-item{background:rgba(255,255,255,0.03);border-radius:12px;padding:16px;border:1px solid rgba(255,255,255,0.06)}
+  .grid-item .num{font-size:28px;font-weight:800;color:#22d3ee}
+  .grid-item .desc{font-size:10px;color:#888;margin-top:4px;line-height:1.4}
+</style>
+</head>
+<body>
+
+<!-- SLIDE 1: Hook -->
+<div class="slide">
+  <div class="gradient-spot g1"></div>
+  <div class="slide-inner">
+    <div class="brand"><span class="brand-logo">MCF</span><span class="brand-tag">Websites</span></div>
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+      <div class="label">🇿🇦 For SA Business Owners</div>
+      <div class="hook" style="font-size:30px">5 Signs Your Website Is <em>Costing You Customers</em></div>
+      <div class="divider"></div>
+      <div class="body-text">And exactly how to fix each one — in days, not months. Starting from <strong style="color:#fff">R2,000</strong>.</div>
+    </div>
+    <div style="text-align:center;padding-top:16px"><span style="font-size:32px">👇</span></div>
+  </div>
+</div>
+
+<!-- SLIDE 2: Slow Loading -->
+<div class="slide slide-dark">
+  <div class="gradient-spot g2"></div>
+  <div class="slide-inner">
+    <div class="brand"><span class="brand-logo">MCF</span><span class="brand-tag">Websites</span></div>
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+      <div class="stat">Sign #1</div>
+      <div class="hook-sm">Your Site Loads Too Slowly</div>
+      <div class="divider"></div>
+      <div class="stat">53%</div>
+      <div class="stat-label" style="margin-bottom:16px">Of mobile users leave if your site takes >3 seconds</div>
+      <div class="body-text">On South African 4G, most template sites take 6+ seconds to load. Your competitor loads in 1.2s. <strong style="color:#fff">That's 50+ lost customers a month.</strong></div>
+      <div style="margin-top:16px;background:rgba(34,211,238,0.1);border-radius:8px;padding:12px">
+        <div style="color:#22d3ee;font-size:12px;font-weight:600">THE FIX:</div>
+        <div style="color:#fff;font-size:13px;margin-top:4px">We build sites that load under 2s. Every time. Optimized for SA networks.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: Not Mobile -->
+<div class="slide">
+  <div class="gradient-spot g1"></div>
+  <div class="slide-inner">
+    <div class="brand"><span class="brand-logo">MCF</span><span class="brand-tag">Websites</span></div>
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+      <div class="stat">Sign #2</div>
+      <div class="hook-sm">It's Not Mobile-Friendly</div>
+      <div class="divider"></div>
+      <div class="stat">80%</div>
+      <div class="stat-label" style="margin-bottom:16px">Of SA users browse on their phone</div>
+      <div class="body-text">If your site looks squished, zoomed out, or broken on iPhone — <strong style="color:#fff">you're invisible to 8 out of 10 potential customers.</strong></div>
+      <div style="margin-top:16px;background:rgba(34,211,238,0.1);border-radius:8px;padding:12px">
+        <div style="color:#22d3ee;font-size:12px;font-weight:600">THE FIX:</div>
+        <div style="color:#fff;font-size:13px;margin-top:4px">Mobile-first by design, not as an afterthought. Every site we build is tested on iPhone, Android, and tablet.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: Outdated -->
+<div class="slide slide-dark">
+  <div class="gradient-spot g2"></div>
+  <div class="slide-inner">
+    <div class="brand"><span class="brand-logo">MCF</span><span class="brand-tag">Websites</span></div>
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+      <div class="stat">Sign #3</div>
+      <div class="hook-sm">It Looks Outdated</div>
+      <div class="divider"></div>
+      <div class="body-text" style="font-size:15px">A 2019-looking website tells customers <strong style="color:#fff">you're stuck in the past.</strong></div>
+      <div style="margin:16px 0 12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+          <span style="color:#666;font-size:12px">2019 Template Site</span>
+          <span style="color:#22d3ee;font-size:12px">2026 Premium Site</span>
+        </div>
+        <div style="height:4px;border-radius:2px;background:#222;overflow:hidden">
+          <div style="width:30%;height:100%;background:#555;border-radius:2px;float:left"></div>
+          <div style="width:70%;height:100%;background:#22d3ee;border-radius:2px;float:right"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:4px">
+          <span style="color:#666;font-size:10px">Bounce Rate: 70%</span>
+          <span style="color:#22d3ee;font-size:10px">Bounce Rate: 25%</span>
+        </div>
+      </div>
+      <div class="body-text">First impressions happen in <strong style="color:#fff">0.05 seconds</strong>. Make it count.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5: No CTA -->
+<div class="slide">
+  <div class="gradient-spot g1"></div>
+  <div class="slide-inner">
+    <div class="brand"><span class="brand-logo">MCF</span><span class="brand-tag">Websites</span></div>
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+      <div class="stat">Sign #4</div>
+      <div class="hook-sm">No Clear Call to Action</div>
+      <div class="divider"></div>
+      <div class="body-text" style="margin-bottom:16px">Visitors land on your site, look around, and <strong style="color:#fff">leave</strong>. Because they don't know what to do next.</div>
+      <div class="grid-2">
+        <div class="grid-item">
+          <div class="num">62%</div>
+          <div class="desc">Of SA small biz sites have no clear CTA above the fold</div>
+        </div>
+        <div class="grid-item">
+          <div class="num">3s</div>
+          <div class="desc">Average time before a visitor leaves if they can't find what to do</div>
+        </div>
+      </div>
+      <div style="margin-top:16px;background:rgba(34,211,238,0.1);border-radius:8px;padding:12px">
+        <div style="color:#22d3ee;font-size:12px;font-weight:600">THE FIX:</div>
+        <div style="color:#fff;font-size:13px;margin-top:4px">Every page needs ONE job. One button. One direction."</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6: No Booking -->
+<div class="slide slide-dark">
+  <div class="gradient-spot g2"></div>
+  <div class="slide-inner">
+    <div class="brand"><span class="brand-logo">MCF</span><span class="brand-tag">Websites</span></div>
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+      <div class="stat">Sign #5</div>
+      <div class="hook-sm">No Digital Menu / Booking System</div>
+      <div class="divider"></div>
+      <div class="body-text" style="margin-bottom:16px">If you're a restaurant without an online menu in 2026 — <strong style="color:#fff">why?</strong> Gyms without booking? Salons without scheduling?</div>
+      <div class="list-item">
+        <div class="list-num">1</div>
+        <div class="list-text"><strong>Restaurants</strong> — Digital menu + online ordering → more orders</div>
+      </div>
+      <div class="list-item">
+        <div class="list-num">2</div>
+        <div class="list-text"><strong>Gyms</strong> — Class booking → fewer phone calls, more members</div>
+      </div>
+      <div class="list-item">
+        <div class="list-num">3</div>
+        <div class="list-text"><strong>Salons</strong> — Online scheduling → book while you sleep</div>
+      </div>
+      <div style="margin-top:16px;background:rgba(34,211,238,0.1);border-radius:8px;padding:12px">
+        <div style="color:#22d3ee;font-size:12px;font-weight:600">THE FIX:</div>
+        <div style="color:#fff;font-size:13px;margin-top:4px">From R2,000. Built in 2 days. Works on every device.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: The Fix -->
+<div class="slide">
+  <div class="gradient-spot g1"></div>
+  <div class="slide-inner">
+    <div class="brand"><span class="brand-logo">MCF</span><span class="brand-tag">Websites</span></div>
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;text-align:center">
+      <div style="font-size:48px;margin-bottom:12px">🛠️</div>
+      <div class="hook-sm" style="text-align:center;font-size:24px">We Fix All 5. In Days.</div>
+      <div class="divider" style="margin:12px auto"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:center;margin-bottom:16px">
+        <div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:12px">
+          <div style="color:#22d3ee;font-size:20px;font-weight:700">R2,000</div>
+          <div style="color:#888;font-size:10px">Digital Menu</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.03);border-radius:12px;padding:12px">
+          <div style="color:#22d3ee;font-size:20px;font-weight:700">R5,000</div>
+          <div style="color:#888;font-size:10px">Classic Site</div>
+        </div>
+      </div>
+      <div class="body-text" style="font-size:12px;color:#666">
+        AI-assisted. Human-directed. Premium results.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8: CTA -->
+<div class="slide slide-dark">
+  <div class="gradient-spot g2"></div>
+  <div class="slide-inner" style="justify-content:center;text-align:center">
+    <div style="font-size:24px;margin-bottom:12px">⚡</div>
+    <div class="hook-sm" style="text-align:center;font-size:20px">Want to Know if YOUR Site Is Costing You?</div>
+    <div class="divider" style="margin:12px auto"></div>
+    <div class="body-text" style="text-align:center;margin-bottom:24px">
+      DM us your website URL. We'll send you a free 2-minute audit — no pitch, no pressure.
+    </div>
+    <div class="brand" style="justify-content:center;margin-bottom:16px">
+      <span class="brand-logo" style="font-size:24px">MCF</span>
+      <span class="brand-tag" style="font-size:11px">Websites</span>
+    </div>
+    <div style="color:#666;font-size:11px;letter-spacing:2px;text-transform:uppercase">@mcf.websites</div>
+  </div>
+</div>
+
+</body>
+</html>
