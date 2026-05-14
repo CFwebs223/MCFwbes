@@ -47,20 +47,20 @@ export default function ProcessSection() {
         <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
       </div>
 
-      {/* Content — white text on translucent glass */}
-      <div className="absolute inset-0 z-20 flex flex-col justify-start pt-24 md:pt-32 px-6 md:px-16 lg:px-24">
+      {/* Content */}
+      <div className="absolute inset-0 z-20 flex flex-col justify-start pt-16 md:pt-32 px-5 md:px-16 lg:px-24">
         <div className="max-w-5xl mx-auto w-full">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="mb-12 md:mb-16"
+            className="mb-8 md:mb-16"
           >
-            <span className="text-white/50 text-xs font-bold tracking-[0.3em] uppercase">How We Work</span>
+            <span className="text-white/50 text-[10px] md:text-xs font-bold tracking-[0.3em] uppercase">How We Work</span>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-5 md:gap-6">
             {steps.map((step, i) => (
               <motion.div
                 key={step.number}
@@ -69,8 +69,8 @@ export default function ProcessSection() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: i * 0.15, ease: [0.16, 1, 0.3, 1] }}
               >
-                <span className="text-white/30 text-4xl md:text-5xl font-bold tabular-nums block mb-3">{step.number}</span>
-                <h3 className="text-white text-xl md:text-2xl font-bold mb-2">{step.title}</h3>
+                <span className="text-white/30 text-3xl md:text-5xl font-bold tabular-nums block mb-2 md:mb-3">{step.number}</span>
+                <h3 className="text-white text-lg md:text-2xl font-bold mb-1 md:mb-2">{step.title}</h3>
                 <p className="text-white/70 text-sm md:text-base font-medium leading-relaxed max-w-xs">{step.desc}</p>
               </motion.div>
             ))}

@@ -89,7 +89,7 @@ export default function OrbitReviews() {
             return (
               <div
                 key={index}
-                className="absolute top-1/2 left-1/2 w-[280px] md:w-[350px]"
+                className="absolute top-1/2 left-1/2 w-[260px] sm:w-[280px] md:w-[350px]"
                 style={{ 
                   transform: `translate(-50%, -50%) rotateY(${angle}deg) translateZ(${radius}px)`,
                   backfaceVisibility: 'hidden', 

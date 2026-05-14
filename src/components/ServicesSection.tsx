@@ -58,7 +58,7 @@ export default function ServicesSection() {
 
         {/* Animated UI — fades and slides up on scroll */}
         <motion.div
-          className="absolute inset-0 z-20 flex flex-col justify-center px-6 md:px-16 lg:px-24"
+          className="absolute inset-0 z-20 flex flex-col justify-center px-5 md:px-16 lg:px-24"
           style={{ opacity: uiOpacity, y: uiY }}
         >
           <div className="max-w-4xl mx-auto w-full">
@@ -67,14 +67,14 @@ export default function ServicesSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="mb-14"
+              className="mb-10 md:mb-14"
             >
-              <span className="text-cyan-400/60 text-xs font-mono tracking-[0.25em] uppercase block mb-3">What We Build</span>
-              <h2 className="text-4xl md:text-6xl font-bold text-white mb-3">Digital Capabilities</h2>
-              <div className="w-20 h-0.5 bg-gradient-to-r from-cyan-400/60 to-transparent" />
+              <span className="text-cyan-400/60 text-[10px] md:text-xs font-mono tracking-[0.25em] uppercase block mb-2 md:mb-3">What We Build</span>
+              <h2 className="text-3xl md:text-6xl font-bold text-white mb-2 md:mb-3">Digital Capabilities</h2>
+              <div className="w-14 md:w-20 h-0.5 bg-gradient-to-r from-cyan-400/60 to-transparent" />
             </motion.div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 md:gap-y-6">
               {services.map((service, i) => (
                 <motion.div
                   key={service.title}
@@ -82,14 +82,14 @@ export default function ServicesSection() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.4, delay: i * 0.06 }}
-                  className="flex items-start gap-4 group"
+                  className="flex items-start gap-3 md:gap-4 group"
                 >
-                  <div className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center shrink-0 mt-0.5 text-cyan-300 group-hover:bg-white/20 transition-colors duration-300">
+                  <div className="w-8 h-8 md:w-9 md:h-9 rounded-lg bg-white/10 flex items-center justify-center shrink-0 mt-0.5 text-cyan-300 group-hover:bg-white/20 transition-colors duration-300">
                     {service.icon}
                   </div>
                   <div>
-                    <h3 className="text-white font-semibold text-base mb-0.5">{service.title}</h3>
-                    <p className="text-white/50 text-sm font-light">{service.desc}</p>
+                    <h3 className="text-white font-semibold text-sm md:text-base mb-0.5">{service.title}</h3>
+                    <p className="text-white/50 text-xs md:text-sm font-light">{service.desc}</p>
                   </div>
                 </motion.div>
               ))}

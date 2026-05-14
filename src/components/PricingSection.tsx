@@ -73,7 +73,7 @@ export default function PricingSection() {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.6, delay: index * 0.15 }}
-                className={`relative group/premium p-6 md:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between border-l-2 backdrop-blur-md transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden ${tier.popular ? 'border-yellow-500 bg-yellow-950/10' : 'border-white/20 bg-white/[0.03] hover:bg-white/[0.06]'}`}
+                className={`relative group/premium p-5 md:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between border-l-2 backdrop-blur-md transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden ${tier.popular ? 'border-yellow-500 bg-yellow-950/10' : 'border-white/20 bg-white/[0.03] hover:bg-white/[0.06]'}`}
               >
                 {/* Ambient hover glow */}
                 <div className={`absolute inset-0 opacity-0 group-hover/premium:opacity-100 transition-opacity duration-700 pointer-events-none ${tier.popular ? 'bg-[radial-gradient(ellipse_at_left,rgba(234,179,8,0.06),transparent_70%)]' : 'bg-[radial-gradient(ellipse_at_left,rgba(255,255,255,0.03),transparent_70%)]'}`} />

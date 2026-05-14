@@ -99,33 +99,33 @@ export default function HeroOceanScene() {
 
         {/* Text — hidden initially, parent opacity controls visibility via scroll */}
         <motion.div
-          className="relative z-10 w-full max-w-[1400px] mx-auto px-6 md:px-12 lg:px-20 pt-32 pointer-events-none"
+          className="relative z-10 w-full max-w-[1400px] mx-auto px-5 md:px-12 lg:px-20 pt-24 sm:pt-28 md:pt-32 pointer-events-none"
           style={{ opacity: textOpacity, y: textY }}
         >
           <div className="max-w-4xl pointer-events-auto">
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif tracking-tight mb-8 text-white drop-shadow-2xl leading-[1.1]">
+            <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-serif tracking-tight mb-6 md:mb-8 text-white drop-shadow-2xl leading-[1.1]">
               Digital Experiences<br />
               <span className="italic font-light text-emerald-400">That Move Effortlessly.</span>
             </h1>
 
-            <p className="text-lg md:text-xl lg:text-2xl text-white/80 font-light max-w-2xl leading-relaxed mb-10">
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/80 font-light max-w-2xl leading-relaxed mb-8 md:mb-10">
               We engineer high-performance websites and immersive WebGL experiences that command attention without breaking a sweat. Built for businesses that refuse to settle for average.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
               <button
                 onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
-                className="px-8 py-4 rounded-full bg-white text-[#020a06] font-medium hover:bg-emerald-50 transition-colors hover-target text-base shadow-[0_0_20px_rgba(255,255,255,0.2)]"
+                className="w-full sm:w-auto px-6 md:px-8 py-3.5 md:py-4 rounded-full bg-white text-[#020a06] font-medium hover:bg-emerald-50 transition-colors hover-target text-sm md:text-base shadow-[0_0_20px_rgba(255,255,255,0.2)] min-h-[48px]"
               >Start Your Project</button>
               <button
                 onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
-                className="px-8 py-4 rounded-full glass border border-white/20 text-white font-medium hover:bg-white/10 transition-colors hover-target text-base"
+                className="w-full sm:w-auto px-6 md:px-8 py-3.5 md:py-4 rounded-full glass border border-white/20 text-white font-medium hover:bg-white/10 transition-colors hover-target text-sm md:text-base min-h-[48px]"
               >Explore Capabilities</button>
             </div>
           </div>
         </motion.div>
 
-        {/* Big centered scroll button — visible at start, fades as text appears */}
+        {/* Big centered scroll button */}
         <motion.div
           className="absolute inset-0 z-15 flex flex-col items-center justify-center cursor-pointer"
           style={{ opacity: buttonOpacity, scale: buttonScale }}
@@ -134,11 +134,11 @@ export default function HeroOceanScene() {
             if (el) el.scrollIntoView({ behavior: 'smooth' });
           }}
         >
-          <div className="flex flex-col items-center gap-6">
-            <div className="w-12 h-20 md:w-16 md:h-24 rounded-full border-2 border-white/30 flex items-start justify-center p-3">
+          <div className="flex flex-col items-center gap-5 md:gap-6">
+            <div className="w-11 h-[72px] md:w-16 md:h-24 rounded-full border-2 border-white/30 flex items-start justify-center p-3">
               <motion.div
-                className="w-1.5 h-4 md:w-2 md:h-5 rounded-full bg-white"
-                animate={{ y: [0, 12, 0] }}
+                className="w-1.5 h-5 md:w-2 md:h-5 rounded-full bg-white"
+                animate={{ y: [0, 10, 0] }}
                 transition={{ repeat: Infinity, duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
               />
             </div>

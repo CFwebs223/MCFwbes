@@ -65,22 +65,22 @@ export default function FinalCTASection() {
           transition={{ duration: 1, ease: "easeOut" }}
           className="max-w-4xl mx-auto"
         >
-          <h2 className="text-4xl md:text-6xl lg:text-7xl font-medium mb-8 text-glow leading-tight tracking-tight uppercase">
+          <h2 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-medium mb-6 md:mb-8 text-glow leading-tight tracking-tight uppercase">
             Your Business Deserves More Than Just A Website.
           </h2>
           
-          <p className="text-xl text-white/60 font-light mb-12 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-xl text-white/60 font-light mb-10 md:mb-12 max-w-2xl mx-auto leading-relaxed">
             We create high-converting, modern websites for brands that want to stand out online. Built to convert, fast, and mobile-optimised.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
-            <a href="#services" className="px-10 py-5 rounded-full glass border border-white/20 text-white font-medium text-lg hover:bg-white/10 transition-colors hover-target">
+          <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center items-center mb-12 md:mb-16">
+            <a href="#services" className="w-full sm:w-auto px-8 md:px-10 py-4 md:py-5 rounded-full glass border border-white/20 text-white font-medium text-base md:text-lg hover:bg-white/10 transition-colors hover-target text-center min-h-[48px] flex items-center justify-center">
               Explore Services
             </a>
           </div>
 
           {/* Contact Form */}
-          <div className="max-w-2xl mx-auto glass-card p-8 md:p-12 text-left relative z-20 edge-glow">
+          <div className="max-w-2xl mx-auto glass-card p-6 md:p-12 text-left relative z-20 edge-glow">
             {/* Subtle background gradient */}
             <div className="absolute -top-40 -right-40 w-80 h-80 bg-cyan-500/3 rounded-full blur-3xl pointer-events-none" />
             <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-emerald-500/3 rounded-full blur-3xl pointer-events-none" />
@@ -220,7 +220,7 @@ export default function FinalCTASection() {
               MODERN. FAST. RELIABLE.
             </p>
 
-            <div className="flex gap-8 text-white/30 text-xs">
+            <div className="flex gap-6 md:gap-8 text-white/30 text-xs">
               <a href="#services" className="hover:text-white/60 transition-colors hover-target">Services</a>
               <a href="#process" className="hover:text-white/60 transition-colors hover-target">Process</a>
               <a href="#work" className="hover:text-white/60 transition-colors hover-target">Work</a>

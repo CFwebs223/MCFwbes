@@ -64,7 +64,7 @@ export default function WhyMcfWebsSection() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="text-3xl md:text-5xl font-medium mb-6 leading-tight text-white/90 drop-shadow-xl"
+            className="text-2xl sm:text-3xl md:text-5xl font-medium mb-5 md:mb-6 leading-tight text-white/90 drop-shadow-xl"
           >
             Most Businesses Don&rsquo;t Need More Noise.<br />
             <span className="text-yellow-500/90">They Need a Better First Impression.</span>
