@@ -53,8 +53,8 @@ export default function ServicesSection() {
         {/* Blur watermark corner — no black block */}
         <div className="absolute bottom-0 right-0 w-20 h-10 backdrop-blur-[4px] pointer-events-none z-10" />
 
-        {/* Gradient at top for readability */}
-        <div className="absolute top-0 left-0 right-0 h-64 bg-gradient-to-b from-black/50 via-black/20 to-transparent pointer-events-none z-10" />
+        {/* Gradient at top for readability — lighter for black text */}
+        <div className="absolute top-0 left-0 right-0 h-48 bg-gradient-to-b from-white/10 to-transparent pointer-events-none z-10" />
 
         {/* Animated UI — fades and slides up on scroll */}
         <motion.div
@@ -69,9 +69,9 @@ export default function ServicesSection() {
               transition={{ duration: 0.6 }}
               className="mb-10 md:mb-14"
             >
-              <span className="text-cyan-400/60 text-[10px] md:text-xs font-mono tracking-[0.25em] uppercase block mb-2 md:mb-3">What We Build</span>
-              <h2 className="text-3xl md:text-6xl font-bold text-white mb-2 md:mb-3">Digital Capabilities</h2>
-              <div className="w-14 md:w-20 h-0.5 bg-gradient-to-r from-cyan-400/60 to-transparent" />
+              <span className="text-black/40 text-[10px] md:text-xs font-mono tracking-[0.25em] uppercase block mb-2 md:mb-3">What We Build</span>
+              <h2 className="text-3xl md:text-6xl font-bold text-black mb-2 md:mb-3">Digital Capabilities</h2>
+              <div className="w-14 md:w-20 h-0.5 bg-gradient-to-r from-black/40 to-transparent" />
             </motion.div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 md:gap-y-6">
@@ -84,12 +84,12 @@ export default function ServicesSection() {
                   transition={{ duration: 0.4, delay: i * 0.06 }}
                   className="flex items-start gap-3 md:gap-4 group"
                 >
-                  <div className="w-8 h-8 md:w-9 md:h-9 rounded-lg bg-white/10 flex items-center justify-center shrink-0 mt-0.5 text-cyan-300 group-hover:bg-white/20 transition-colors duration-300">
+                  <div className="w-8 h-8 md:w-9 md:h-9 rounded-lg bg-black/10 flex items-center justify-center shrink-0 mt-0.5 text-black/60 group-hover:bg-black/15 transition-colors duration-300">
                     {service.icon}
                   </div>
                   <div>
-                    <h3 className="text-white font-semibold text-sm md:text-base mb-0.5">{service.title}</h3>
-                    <p className="text-white/50 text-xs md:text-sm font-light">{service.desc}</p>
+                    <h3 className="text-black font-bold text-sm md:text-base mb-0.5">{service.title}</h3>
+                    <p className="text-black/60 text-xs md:text-sm font-medium">{service.desc}</p>
                   </div>
                 </motion.div>
               ))}
