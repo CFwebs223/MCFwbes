@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
+import { motion, useScroll, useTransform, useMotionValueEvent } from 'framer-motion';
 import { Layout, Smartphone, CalendarDays, ShoppingBag, Globe, Zap } from 'lucide-react';
 import FrameSequence from './FrameSequence';
 
@@ -25,6 +25,7 @@ export default function ServicesSection() {
     offset: ["start start", "end end"]
   });
 
+  // Frame tracking
   const [frameIndex, setFrameIndex] = useState(0);
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
     const idx = Math.min(Math.floor(latest * TOTAL_FRAMES), TOTAL_FRAMES - 1);
@@ -33,6 +34,10 @@ export default function ServicesSection() {
       setFrameIndex(idx);
     }
   });
+
+  // UI opacity: starts visible, fades out as user scrolls
+  const uiOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0]);
+  const uiY = useTransform(scrollYProgress, [0, 0.3], [0, -40]);
 
   return (
     <section ref={sectionRef} id="services" className="relative h-[200vh] w-full bg-black">
@@ -44,28 +49,53 @@ export default function ServicesSection() {
           totalFrames={TOTAL_FRAMES}
           progress={frameIndex / TOTAL_FRAMES}
         />
-        {/* Cover watermark */}
-        <div className="absolute bottom-0 right-0 w-32 h-12 bg-gradient-to-l from-black to-transparent pointer-events-none z-10" />
 
-        {/* Dark overlay at top for text readability */}
-        <div className="absolute top-0 left-0 right-0 h-48 bg-gradient-to-b from-black/60 to-transparent pointer-events-none z-10" />
+        {/* Blur watermark corner — no black block */}
+        <div className="absolute bottom-0 right-0 w-20 h-10 backdrop-blur-[4px] pointer-events-none z-10" />
 
-        {/* Text at top */}
-        <div className="absolute top-0 left-0 right-0 z-20 pt-16 md:pt-20 px-6 md:px-12">
-          <div className="max-w-3xl">
+        {/* Gradient at top for readability */}
+        <div className="absolute top-0 left-0 right-0 h-64 bg-gradient-to-b from-black/50 via-black/20 to-transparent pointer-events-none z-10" />
+
+        {/* Animated UI — fades and slides up on scroll */}
+        <motion.div
+          className="absolute inset-0 z-20 flex flex-col justify-center px-6 md:px-16 lg:px-24"
+          style={{ opacity: uiOpacity, y: uiY }}
+        >
+          <div className="max-w-4xl mx-auto w-full">
             <motion.div
-              initial={{ opacity: 0, y: -10 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
+              className="mb-14"
             >
-              <h2 className="text-3xl md:text-5xl font-bold text-white mb-2 drop-shadow-lg">Digital Capabilities</h2>
-              <p className="text-white/60 text-base font-light max-w-xl">
-                From websites to automation — we build what your business needs to grow online.
-              </p>
+              <span className="text-cyan-400/60 text-xs font-mono tracking-[0.25em] uppercase block mb-3">What We Build</span>
+              <h2 className="text-4xl md:text-6xl font-bold text-white mb-3">Digital Capabilities</h2>
+              <div className="w-20 h-0.5 bg-gradient-to-r from-cyan-400/60 to-transparent" />
             </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+              {services.map((service, i) => (
+                <motion.div
+                  key={service.title}
+                  initial={{ opacity: 0, y: 15 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: i * 0.06 }}
+                  className="flex items-start gap-4 group"
+                >
+                  <div className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center shrink-0 mt-0.5 text-cyan-300 group-hover:bg-white/20 transition-colors duration-300">
+                    {service.icon}
+                  </div>
+                  <div>
+                    <h3 className="text-white font-semibold text-base mb-0.5">{service.title}</h3>
+                    <p className="text-white/50 text-sm font-light">{service.desc}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
           </div>
-        </div>
+        </motion.div>
 
       </div>
     </section>

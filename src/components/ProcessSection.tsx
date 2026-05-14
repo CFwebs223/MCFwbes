@@ -34,8 +34,10 @@ export default function ProcessSection() {
         <source src="/videos/tropical.mp4" type="video/mp4" />
       </video>
 
-      {/* Cover watermark */}
-      <div className="absolute bottom-0 right-0 w-32 h-12 bg-black pointer-events-none z-10" />
+      {/* Blur watermark corner */}
+      <div className="absolute bottom-0 right-0 w-28 h-14 backdrop-blur-[6px] pointer-events-none z-10" />
+      {/* Edge blur — subtle feathered border hides watermark edges */}
+      <div className="absolute bottom-0 right-0 w-40 h-20 bg-gradient-to-br from-transparent via-transparent to-black/10 pointer-events-none z-10" />
       {/* Soft vignette */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_30%,rgba(0,0,0,0.3)_100%)] z-10 pointer-events-none" />
 

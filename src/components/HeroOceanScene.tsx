@@ -76,8 +76,8 @@ export default function HeroOceanScene() {
           />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,10,5,0.7)_100%)] pointer-events-none" />
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-[#020a06]/90 pointer-events-none" />
-          {/* Cover watermark */}
-          <div className="absolute bottom-0 right-0 w-32 h-12 bg-gradient-to-l from-black to-transparent pointer-events-none z-10" />
+          {/* Blur watermark corner — invisible blend */}
+          <div className="absolute bottom-0 right-0 w-20 h-10 backdrop-blur-[4px] pointer-events-none z-10" />
         </motion.div>
 
         {/* Branding — appears at end */}
