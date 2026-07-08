@@ -10,6 +10,16 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ['lucide-react', 'framer-motion'],
   },
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'www.mcfwebs.agency' }],
+        destination: 'https://mcfwebs.agency/:path*',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

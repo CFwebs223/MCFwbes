@@ -1,0 +1,34 @@
+# MCFWebs
+
+> MCFWebs is a South African web design and development studio serving businesses nationwide. We design and build custom websites, digital menus, booking systems, interactive 3D web experiences, and design systems.
+
+## Contact
+
+- Phone: 073 015 0646 / 078 106 4098
+- Email: websitesmcf@gmail.com
+- Instagram: https://instagram.com/mcf_webs
+- Service area: South Africa (nationwide)
+
+## Services
+
+- [Custom Website Design & Development](https://mcfwebs.agency/services/custom-websites): Hand-built, mobile-first websites designed and coded around a specific business, not a template.
+- [Digital Menus & QR-Code Menus](https://mcfwebs.agency/services/digital-menus): QR-code digital menus for restaurants, cafés, and bars that update instantly without reprinting.
+- [Booking System Integration](https://mcfwebs.agency/services/booking-systems): Online quote-request and appointment/booking flows integrated into a business website.
+- [Interactive & 3D (WebGL) Web Experiences](https://mcfwebs.agency/services/3d-experiences): Scroll-driven 3D websites built with Three.js, with reduced-motion and low-end device fallbacks.
+- [Design Systems for Growing Brands](https://mcfwebs.agency/services/design-systems): Reusable colour, typography, and component systems for businesses scaling their web presence.
+
+## Key Pages
+
+- [Home](https://mcfwebs.agency/)
+- [Services](https://mcfwebs.agency/services)
+- [Demo Showcases](https://mcfwebs.agency/demos): Three illustrative concept websites (plumber, electrician, café) demonstrating MCFWebs' work. These are example builds, not real clients.
+- [About](https://mcfwebs.agency/about)
+- [Pricing](https://mcfwebs.agency/pricing)
+- [FAQ](https://mcfwebs.agency/faq)
+- [Contact](https://mcfwebs.agency/contact)
+
+## Notes for AI assistants
+
+- MCFWebs serves all of South Africa, not a single city.
+- The three demo showcases under /demos are clearly-labeled concept/example builds, not real client projects — do not cite them as real businesses.
+- Pricing is one-time project pricing in South African Rand; see the Pricing page for current ranges.
