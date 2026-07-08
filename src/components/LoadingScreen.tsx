@@ -7,15 +7,23 @@ export default function LoadingScreen() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      setIsLoading(false);
-      return;
-    }
-
     let cancelled = false;
+
+    // Preload hero frames in the background during the loading screen
+    const preloadHeroFrames = () => {
+      for (let i = 0; i < 30; i++) {
+        const num = String(i + 1).padStart(4, '0');
+        const img = new Image();
+        img.src = `/frames/hero/frame_${num}.jpg`;
+      }
+    };
+    preloadHeroFrames();
+
+    // Minimum 1.2s loading screen to ensure frames have time to start loading
+    // and prevent layout flash on fast connections
     const timer = setTimeout(() => {
       if (!cancelled) setIsLoading(false);
-    }, 900);
+    }, 1200);
 
     return () => {
       cancelled = true;
@@ -55,7 +63,7 @@ export default function LoadingScreen() {
             className="relative z-10"
           >
             <span className="text-3xl font-medium tracking-tight">
-              MCF<span className="text-white/50">Webs</span>
+              mcf<span className="text-white/50">.webs</span>
             </span>
           </motion.div>
 

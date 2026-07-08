@@ -1,18 +1,12 @@
 'use client';
 
-import { useEffect } from 'react';
+import { ReactNode, useEffect, useRef } from 'react';
 import Lenis from 'lenis';
 
-/**
- * Mounts smooth scrolling as a side effect only — renders no children — so
- * it can safely be dynamic-imported with ssr:false without bailing the rest
- * of the page (which it would wrap) out of server rendering.
- */
-export default function LenisProvider() {
-  useEffect(() => {
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion) return;
+export default function LenisProvider({ children }: { children: ReactNode }) {
+  const lenisRef = useRef<Lenis | null>(null);
 
+  useEffect(() => {
     const isMobile = window.matchMedia('(pointer: coarse)').matches;
 
     const lenis = new Lenis({
@@ -26,6 +20,8 @@ export default function LenisProvider() {
       infinite: false,
     });
 
+    lenisRef.current = lenis;
+
     function raf(time: number) {
       lenis.raf(time);
       requestAnimationFrame(raf);
@@ -38,5 +34,5 @@ export default function LenisProvider() {
     };
   }, []);
 
-  return null;
+  return <>{children}</>;
 }
